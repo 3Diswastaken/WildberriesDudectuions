@@ -1,0 +1,25 @@
+{
+  "Url": "https://write-off-ext-delivery.wb.ru/mobile/v2/replace-report/goods/list?pickpoint_id={pickpointId}&transaction_type=Expired",
+  "Headers": {
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "Host": "write-off-ext-delivery.wb.ru",
+    "Origin": "https://pvz-lk.wb.ru",
+    "Pragma": "no-cache",
+    "Referer": "https://pvz-lk.wb.ru/",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-site",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "X-App-Type": "prod",
+    "X-App-Version": "v20.00.00",
+    "X-PickPoint-External-Id": "0",
+    "X-PickPoint-Id": "0",
+    "X-Token": "",
+    "sec-ch-ua": "\"Not;A=Brand\";v=\"99\", \"Microsoft Edge\";v=\"139\", \"Chromium\";v=\"139\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\""
+  }
+}

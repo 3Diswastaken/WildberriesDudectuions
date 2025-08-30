@@ -4,28 +4,60 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
+using WildberriesDudectuions.Models;
 
 
 namespace WildberriesDudectuions
 {
     public class WbRequestService
     {
-        private readonly RequestConfig _config;
         private readonly HttpClient _httpClient;
 
-        public WbRequestService(RequestConfig config)
+        public WbRequestService(HttpClient http)
         {
-            _config = config;
-            _httpClient = new HttpClient();
+            _httpClient = http;
         }
 
-        public async Task<string> GetDataForPickpoint(string pickpointId)
+        private void InitializeHeaders(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
         {
-            string url = _config.UrlTemplate.Replace("{pickpointId}", pickpointId);
+            var pickpoint = userConfig.PickpointId[pickpointName];
 
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            requestConfig.Headers["X-PickPoint-External-Id"] = pickpoint.ExternalId;
+            requestConfig.Headers["X-PickPoint-Id"] = pickpoint.Id;
+            requestConfig.Headers["X-Token"] = userConfig.Token;
+        }
 
-            foreach(var header in _config.Headers)
+        private string BuildUrl(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        {
+            string pickpointId = userConfig.PickpointId[pickpointName].ExternalId;
+            string url = requestConfig.Url;
+            url = url.Replace("{pickpointId}", pickpointId);
+            url = url.Replace("{dateTo}", Uri.EscapeDataString(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")));
+            url = url.Replace("{dateFrom}", Uri.EscapeDataString(DateTime.UtcNow.AddDays(-30).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")));
+            return url;
+        }
+
+        public async Task<string> GetDataForPickpoint(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        {
+
+            string url = BuildUrl(userConfig, requestConfig, pickpointName);
+            InitializeHeaders(userConfig, requestConfig, pickpointName);
+            HttpRequestMessage request;
+
+
+            if (requestConfig.Method == "POST")
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, url)
+                {
+                    Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestConfig.Payload), Encoding.UTF8, "application/json")
+                };
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Get, url);
+            }
+
+            foreach (var header in requestConfig.Headers)
             {
                 request.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }

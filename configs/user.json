@@ -1,0 +1,21 @@
+{
+  "X-Token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxMDcyODIzNTM6ODNjOTAzMzEwZDg5NjdiZiIsInVpZCI6ODA3OTE5LCJ3dWlkIjoxMDcyODIzNTMsImVpZCI6MCwicGlkIjoxMDMyNjEsInhwaWQiOjUwMDQ2MDk1LCJwdHlwZSI6OCwicGlja3BvaW50X2dyb3VwIjpmYWxzZSwicyI6NDUsInIiOlsxXSwicGVybWlzc2lvbnMiOltdLCJhZG1pbiI6ZmFsc2UsImJsIjpmYWxzZSwiYWRtaW5fcm9sZXMiOm51bGwsImlzX3JlZnJlc2giOmZhbHNlLCJyZWZyZXNoX2tleSI6IiIsImNvdW50cnkiOiJSVSIsImFwaWRzIjpbMTQyNTAsMjcxNDAsOTE1OTMsMTAzMjYxXSwiZWFwaWRzIjpbMTM3NTY5LDE1NzE2NCw1MDAzNDUyNyw1MDA0NjA5NV0sInVzaHMiOlsxMCwxMywzOSw0NV0sInZlcnNpb24iOjEsImRldmljZV91dWlkIjoiMDRhZWMxMGM2MzFmNDE5NjhjNjllODQ1YjAyMmI0NTUiLCJleHAiOjE3NTY2NjU0MzQsImlhdCI6MTc1NjU3OTAzNH0.d3uvslQWnkBDnxjyo3x14dR7FzrFAY-2oZuXglQLSHmhKCBBcslIJOBOqNy06pM1tal33CHU0qjzDdFmXeSRC0Hkr2R1sURmUd91ZDNW-3x-TknU4Q1-ghSBvQADG6MjNy49uDHRVdTtdtJCho3H-ZsBJdgYakMZ1vzg91HwAwGH2Ocyx1u4acNV4urp2SZD5znLXLdVNbbXRUZiqHR84Dnj82W1OOxdU8Vyv3tLGQjbn9wsSILKhK8wGVuU_vbcQcjqLCGcAS_hBD6N-91rCWISokzyF0NA8IX2oCli2261MQ84wjOelkGyyotimAoImGOkig3tqUhCFfZbRkWANw",
+  "PickpointId": {
+    "k8": {
+      "external-id": "137569",
+      "id": "14250"
+    },
+    "p105": {
+      "external-id": "157164",
+      "id": "27140"
+    },
+    "p10": {
+      "external-id": "50034527",
+      "id": "91593"
+    },
+    "k32": {
+      "external-id": "50046095",
+      "id": "103261"
+    }
+  }
+}

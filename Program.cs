@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WildberriesDudectuions.Models;
 
 namespace WildberriesDudectuions
 {
@@ -11,14 +12,19 @@ namespace WildberriesDudectuions
     {
         static async Task Main(string[] args)
         {
-            RequestConfig config = ConfigLoader.Load("C:\\Users\\rusla\\source\\repos\\WildberriesDudectuions\\headers.json");
+            HttpClient httpClient = new HttpClient();
 
-            WbRequestService service = new(config);
-            string pickpointId = config.Headers["X-PickPoint-External-Id"];
+            RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
+            RequestConfig ticketsConfig = ConfigLoader.LoadTickets();
+            RequestConfig handingGoodsConfig = ConfigLoader.LoadHandingGoods();
+            RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
+            UserConfig userConfig = ConfigLoader.LoadUserConfig();
+
+            WbRequestService service = new(httpClient);
 
             try
             {
-                string jsonData = await service.GetDataForPickpoint(pickpointId);
+                string jsonData = await service.GetDataForPickpoint(userConfig, defectGoodsConfig, "p105");
                 Console.WriteLine(jsonData);
             }
             catch (Exception ex)
