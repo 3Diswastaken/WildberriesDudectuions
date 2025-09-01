@@ -12,7 +12,7 @@ namespace WildberriesDudectuions
             var json = File.ReadAllText(fullPath);
             try
             {
-                return JsonSerializer.Deserialize<T>(json)!;
+                return JsonSerializer.Deserialize<T>(json);
             }
             catch (JsonException ex)
             {
