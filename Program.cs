@@ -25,8 +25,12 @@ namespace WildberriesDudectuions
 
             try
             {
-                string jsonData = await service.GetDataForPickpoint(userConfig, ticketsConfig, "p105");
-                Console.WriteLine(jsonData);
+                string jsonData = await service.GetDataForPickpoint(userConfig, replaceGoodsConfig, "p105");
+                var result = ResultsConverter.ConvertReplaceGoods(jsonData);
+                foreach (var item in result.ReplaceGoodsList)
+                {
+                    Console.WriteLine($"{item.Shk} | {item.TicketId} | {item.OnHoldDate.ToString("yyyy-MM-dd HH:mm")}");
+                }
             }
             catch (Exception ex)
             {
