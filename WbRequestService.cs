@@ -46,6 +46,7 @@ namespace WildberriesDudectuions
         public async Task<string> GetDataForPickpoint(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
         {
             string url = BuildUrl(userConfig, requestConfig, pickpointName);
+            //Console.WriteLine(url);
             InitializeHeaders(userConfig, requestConfig, pickpointName);
             HttpRequestMessage request;
 
@@ -65,6 +66,7 @@ namespace WildberriesDudectuions
             foreach (var header in requestConfig.Headers)
             {
                 request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+               // Console.WriteLine($"{header.Key}   {header.Value}");
             }
 
             var response = await _httpClient.SendAsync(request);

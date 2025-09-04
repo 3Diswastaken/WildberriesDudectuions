@@ -7,22 +7,24 @@ using System.Threading.Tasks;
 
 namespace WildberriesDudectuions.Models
 {
-    public class DefectGood
+    public class DefectGood : GoodsInterface
     {
         [JsonPropertyName("shk")]
         public long Shk { get; set; }
 
-        [JsonPropertyName("defect_type")]
-        public string DefectType { get; set; } = "";
+        [JsonPropertyName("on_hold_date")]
+        public DateTime? OnHoldDate { get; set; }
 
         [JsonPropertyName("retention_price")]
-        public decimal RetentionPrice { get; set; }
+        public decimal Price { get; set; }
+
+        [JsonPropertyName("defect_type")]
+        public string DefectType { get; set; } = "";
 
         [JsonPropertyName("balance_status")]
         public string BalanceStatus { get; set; } = "";
 
-        [JsonPropertyName("on_hold_date")]
-        public DateTime OnHoldDate { get; set; }
+        
 
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using WildberriesDudectuions.Models;
 
 namespace WildberriesDeductions.Models
 {
-    public class ReplaceGood
+    public class ReplaceGood : GoodsInterface
     {
         [JsonPropertyName("shk")]
         public long Shk { get; set; }
@@ -16,7 +17,7 @@ namespace WildberriesDeductions.Models
         public decimal Price { get; set; }
 
         [JsonPropertyName("on_hold_date")]
-        public DateTime OnHoldDate { get; set; }
+        public DateTime? OnHoldDate { get; set; }
 
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }

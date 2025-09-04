@@ -1,5 +1,5 @@
 {
-  "Url": "https://s-point.wb.ru/s39/api/v2/handing-report-2/box-goods/list?pickpoint_id={pickpointId}",
+  "Url": "https://s-point.wb.ru/s13/api/v2/handing-report-2/box-goods/list?pickpoint_id={pickpointId}",
   "Headers": {
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7",
