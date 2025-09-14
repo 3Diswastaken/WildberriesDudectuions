@@ -12,5 +12,7 @@ namespace WildberriesDudectuions.Models
         public DateTime? OnHoldDate { get; set; }
         public long TicketId { get; set; }
         public decimal Price { get; set; }
+        public string Reason { get; set; }
+        public string Pickpoint { get; set; }
     }
 }

@@ -9,6 +9,8 @@ namespace WildberriesDudectuions.Models
 {
     public class DefectGood : GoodsInterface
     {
+        public string Reason { get; set; } = "Брак";
+        public string Pickpoint { get; set; } = "";
         [JsonPropertyName("shk")]
         public long Shk { get; set; }
 

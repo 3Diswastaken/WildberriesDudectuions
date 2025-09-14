@@ -10,6 +10,9 @@ namespace WildberriesDeductions.Models
 {
     public class ReplaceGood : GoodsInterface
     {
+        public string Reason { get; set; } = "Подмена";
+        public string Pickpoint { get; set; } = "";
+
         [JsonPropertyName("shk")]
         public long Shk { get; set; }
 

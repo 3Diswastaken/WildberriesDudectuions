@@ -9,6 +9,8 @@ namespace WildberriesDudectuions.Models
 {
     public class HandingGood : GoodsInterface
     {
+        public string Reason { get; set; } = "Зависший ШК";
+        public string Pickpoint { get; set; } = "";
         [JsonPropertyName("shk")]
         public long Shk { get; set; }
 
