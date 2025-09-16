@@ -74,5 +74,35 @@ namespace WildberriesDudectuions
 
             return await response.Content.ReadAsStringAsync();
         }
+
+        public async Task<string> Login(long phoneNumber)
+        {
+            string url = "https://r-point.wb.ru/api/v1/login";
+            string jsonHeaders = File.ReadAllText("C:\\Users\\rusla\\source\\repos\\WildberriesDudectuions\\configs\\login.json");
+            var headersDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonHeaders);
+            
+            var payload = new
+            {
+                phone = phoneNumber,
+                resend = false,
+                device_uuid = "04aec10c631f41968c69e845b022b455"
+            };
+
+            foreach (var header in headersDict)
+            {
+                Console.WriteLine(header.Key + " " + header.Value);
+            }
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+            };
+            foreach (var header in headersDict)
+            {
+                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
     }
 }

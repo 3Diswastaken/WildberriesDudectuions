@@ -26,7 +26,9 @@ namespace WildberriesDudectuions
 
             List<GoodsInterface> allGoods = new();
 
-            foreach (var pickpoint in userConfig.PickpointId)
+            long phoneNumber = long.Parse(Console.ReadLine());
+            await service.Login(phoneNumber);
+            /*foreach (var pickpoint in userConfig.PickpointId)
             {
                 try
                 {
@@ -72,8 +74,8 @@ namespace WildberriesDudectuions
             var sortedGoods = allGoods.OrderBy(g => g.OnHoldDate);
             foreach (var item in sortedGoods)
             {
-                Console.WriteLine($"{item.OnHoldDate?.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
-            }
+                Console.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
+            }*/
 
 
 
