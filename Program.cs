@@ -26,14 +26,22 @@ namespace WildberriesDudectuions
 
             List<GoodsInterface> allGoods = new();
 
+            // тест логина
             long phoneNumber = long.Parse(Console.ReadLine());
             await service.Login(phoneNumber);
-            /*foreach (var pickpoint in userConfig.PickpointId)
+            // конец теста логина
+
+
+            foreach (var pickpoint in userConfig.PickpointId)
             {
                 try
                 {
+                    // получаем подмены
+                    // сначала получаем полный ответ в виде json
                     string jsonData = await service.GetDataForPickpoint(userConfig, replaceGoodsConfig, pickpoint.Key);
+                    // конвертируем json в объект
                     var resultReplaceGoods = ResultsConverter.ConvertReplaceGoods(jsonData);
+                    // если у товара нет тикета, значит он не обработан и его нужно учитывать
                     foreach (var item in resultReplaceGoods.ReplaceGoodsList)
                     {
                         if (item.TicketId == 0)
@@ -43,6 +51,7 @@ namespace WildberriesDudectuions
                         }
                     }
 
+                    // получаем брак
                     jsonData = await service.GetDataForPickpoint(userConfig, defectGoodsConfig, pickpoint.Key);
                     var resultDefectGoods = ResultsConverter.ConvertDefectGoods(jsonData);
                     foreach (var item in resultDefectGoods.DefectGoodsList)
@@ -54,6 +63,7 @@ namespace WildberriesDudectuions
                         }
                     }
 
+                    // получаем тикеты
                     jsonData = await service.GetDataForPickpoint(userConfig, ticketsConfig, pickpoint.Key);
                     var reslutTickets = ResultsConverter.ConvertTickets(jsonData);
                     foreach (var item in reslutTickets.Tickets)
@@ -71,14 +81,14 @@ namespace WildberriesDudectuions
                 }
             }
 
+            // сортировка по дате удержания полученных удержаний
             var sortedGoods = allGoods.OrderBy(g => g.OnHoldDate);
             foreach (var item in sortedGoods)
             {
                 Console.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
-            }*/
+            }
 
-
-
+            // задержка перед закрытием консоли
             Console.ReadLine();
         }
     }
