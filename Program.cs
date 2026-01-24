@@ -20,28 +20,27 @@ namespace WildberriesDudectuions
             RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
             RequestConfig ticketsConfig = ConfigLoader.LoadTickets(); // использует post и payload
             RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
+            RequestConfig loginConfig = ConfigLoader.LoadLogin(); 
             UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их 
+
 
             WbRequestService service = new(httpClient);
 
             List<GoodsInterface> allGoods = new();
 
-            /*
             // тест логина
-            long phoneNumber = long.Parse(Console.ReadLine());
-            string loginResult = await service.Login(phoneNumber);
-            Console.WriteLine(loginResult);
-*/
+            Console.WriteLine("Введите номер телефона для логина (только цифры, начиная с семи):");
+            string? input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.WriteLine("Ошибка: номер телефона не может быть пустым.");
+                return;
+            }
+            long phoneNumber = long.Parse(input);
 
-
-
-
-
-
-            /*Console.WriteLine();
-            Console.WriteLine("Нажмите Enter чтобы завершить тест и выйти...");
-            Console.ReadLine();
-            return;*/
+            string loginResult = await service.GetLogin(loginConfig, phoneNumber);
+            
+            return;
 
             // конец теста логина
 

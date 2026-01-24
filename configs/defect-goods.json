@@ -1,6 +1,7 @@
 {
   "Url": "https://write-off-ext-delivery.wb.ru/mobile/get-defect-panel?filter.pickpoint_id={pickpointId}&filter.date_from={dateFrom}&filter.date_to={dateTo}&sort_by=DATE_DESC&page_size=20&page=0",
-  "Headers": {
+  "Headers": 
+  {
     "Accept": "application/json, text/plain, */*",
     "Host": "write-off-ext-delivery.wb.ru",
     "X-PickPoint-External-Id": "0",

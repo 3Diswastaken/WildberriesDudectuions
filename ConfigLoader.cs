@@ -31,7 +31,9 @@ namespace WildberriesDudectuions
         }
 
         public static UserConfig LoadUserConfig() => Load<UserConfig>("user.json");
-        public static RequestConfig LoadCommonHeaders() => LoadRequest("common-headers.json");
+        public static RequestConfig LoadCommonHeaders() => Load<RequestConfig>("common-headers.json");
+
+        public static RequestConfig LoadLogin() => LoadRequest("login.json");
         public static RequestConfig LoadDefectGoods() => LoadRequest("defect-goods.json");
         public static RequestConfig LoadHandingGoods() => LoadRequest("handing-goods.json");
         public static RequestConfig LoadReplaceGoods() => LoadRequest("replace-goods.json");

@@ -13,9 +13,27 @@ namespace WildberriesDudectuions.Models
 
         public void ApplyCommonHeaders(Dictionary<string, string> common)
         {
-            foreach (var h in common)
-                if (!Headers.ContainsKey(h.Key))
-                    Headers[h.Key] = h.Value;
+            foreach (var header in common)
+                if (!Headers.ContainsKey(header.Key))
+                    Headers[header.Key] = header.Value;
+        }
+
+        public RequestConfig WithRuntimeHeaders(UserConfig userConfig, string pickpointName)
+        {
+            var updatedConfig = new RequestConfig
+            {
+                Url = this.Url,
+                Method = this.Method,
+                Headers = new Dictionary<string, string>(this.Headers),
+                Payload = new Dictionary<string, object>(this.Payload)
+            };
+
+            // Добавляем или обновляем заголовки
+            var pickpoint = userConfig.PickpointId[pickpointName];
+
+            updatedConfig.Headers["X-PickPoint-External-Id"] = pickpoint.ExternalId;
+            updatedConfig.Headers["X-PickPoint-Id"] = pickpoint.Id;
+            return updatedConfig;
         }
     }
 }

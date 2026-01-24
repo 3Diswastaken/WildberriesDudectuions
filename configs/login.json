@@ -1,5 +1,15 @@
 {
-  "accept": "application/json, text/plain, */*",
-  "content-length": "87",
-  "content-type": "application/json",
+	"Url": "https://r-point.wb.ru/api/v1/login",
+	"Headers": 
+	{
+		"accept": "application/json, text/plain, */*",
+		"content-length": "87",
+		"content-type": "application/json"
+	},
+	"Payload":
+	{
+		"phone":"0",
+		"resend":false,
+		"device_uuid":"162de87f899b4e698191594c0d44f8c9"
+	} 
 }
