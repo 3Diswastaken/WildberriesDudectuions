@@ -23,6 +23,7 @@ namespace WildberriesDudectuions
             RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
             RequestConfig loginConfig = ConfigLoader.LoadLogin();
             RequestConfig validateConfig = ConfigLoader.LoadValidate();
+            RequestConfig switchConfig = ConfigLoader.LoadSwitch();
             UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их 
 
             WbRequestService service = new(httpClient);
@@ -56,7 +57,15 @@ namespace WildberriesDudectuions
             string validateJson = await service.Validate(validateConfig, loginResponse.LoginToken, code);
             var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
 
-            Console.WriteLine(validateResponse.Access.Token);
+            string accessToken = validateResponse.Access.Token;
+            Console.WriteLine($"Access Token: {accessToken}");
+
+            string switchJson = await service.Switch(userConfig, switchConfig, accessToken, "p105");
+            var switchResponse = ResultsConverter.ConvertSwitchResponse(switchJson);
+            Console.WriteLine($"Switch Token: {switchResponse.Access.Token}");
+
+
+
 
             return;
 

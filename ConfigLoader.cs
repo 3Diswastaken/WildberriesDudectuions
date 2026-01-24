@@ -48,5 +48,6 @@ namespace WildberriesDudectuions
         public static RequestConfig LoadHandingGoods() => LoadRequest("handing-goods.json");
         public static RequestConfig LoadReplaceGoods() => LoadRequest("replace-goods.json");
         public static RequestConfig LoadTickets() => LoadRequest("tickets.json");
+        public static RequestConfig LoadSwitch() => LoadRequest("switch.json");
     }
 }

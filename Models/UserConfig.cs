@@ -13,6 +13,8 @@ namespace WildberriesDudectuions.Models
         public string ExternalId { get; set; } = "";
         [JsonPropertyName("id")]
         public string Id { get; set; } = "";
+        [JsonPropertyName("shard")]
+        public string Shard { get; set; } = "";
     }
     public class UserConfig
     {

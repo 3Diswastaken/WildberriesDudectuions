@@ -1,21 +1,25 @@
 {
-  "X-Token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxMDcyODIzNTM6NDQ2ODg5NTUyYzNlMDZjOSIsInVpZCI6ODA3OTE5LCJ3dWlkIjoxMDcyODIzNTMsImVpZCI6MCwicGlkIjo5MTU5MywieHBpZCI6NTAwMzQ1MjcsInB0eXBlIjo4LCJwaWNrcG9pbnRfZ3JvdXAiOmZhbHNlLCJzIjozOSwiciI6WzFdLCJwZXJtaXNzaW9ucyI6W10sImFkbWluIjpmYWxzZSwiYmwiOmZhbHNlLCJhZG1pbl9yb2xlcyI6bnVsbCwiaXNfcmVmcmVzaCI6ZmFsc2UsInJlZnJlc2hfa2V5IjoiIiwiY291bnRyeSI6IlJVIiwiYXBpZHMiOlsxNDI1MCwyNzE0MCwxMDMyNjEsOTE1OTNdLCJlYXBpZHMiOlsxMzc1NjksMTU3MTY0LDUwMDM0NTI3LDUwMDQ2MDk1XSwidXNocyI6WzEwLDEzLDM5LDQ1XSwidmVyc2lvbiI6MSwiZGV2aWNlX3V1aWQiOiIwNGFlYzEwYzYzMWY0MTk2OGM2OWU4NDViMDIyYjQ1NSIsImV4cCI6MTc1ODAxMDcxOCwiaWF0IjoxNzU3OTI0MzE4fQ.ATl0I-29PqeM2vmfeAqpi9Y6I4lP5c8qFpjjv_uAby-07wEkwEsswKXYonsH9ZBWGUUqAzyPq3XhHImSBPlNE-Mp_WriY7M45FXdPC9IUOBeKx6Gx-9UBFIBpm9J7HUnDbqGjhzPAywARv-j04aQlLY6tensqpsUmcJJ9axUJxIGFToznSJRFdz7cmnC3MutVTejNemww4z4esdsKPeSvfPlcKbmHKzUiZA9JQe2LyeXiYIE9-V_dobLV2O56rzr1P4Sf8_3SJnwNUWGthJaQTaIE1XYp5z0Xe_OI78gAC1pStjsQIT-Y5v5FeoooM4WgZIuRvIZikdZMRnAxFHOcA",
+  "X-Token": "",
   "PickpointId": {
     "k8": {
       "external-id": "137569",
-      "id": "14250"
+      "id": "14250",
+      "shard": "10"
     },
     "p105": {
       "external-id": "157164",
-      "id": "27140"
+      "id": "27140",
+      "shard": "13"
     },
     "p10": {
       "external-id": "50034527",
-      "id": "91593"
+      "id": "91593",
+      "shard": "39"
     },
     "k32": {
       "external-id": "50046095",
-      "id": "103261"
+      "id": "103261",
+      "shard": "45"
     }
   }
 }

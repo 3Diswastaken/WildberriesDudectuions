@@ -18,15 +18,20 @@ namespace WildberriesDudectuions.Models
                     Headers[header.Key] = header.Value;
         }
 
-        public RequestConfig WithRuntimeHeaders(UserConfig userConfig, string pickpointName)
+        public RequestConfig Clone ()
         {
-            var updatedConfig = new RequestConfig
+            return new RequestConfig
             {
                 Url = this.Url,
                 Method = this.Method,
                 Headers = new Dictionary<string, string>(this.Headers),
                 Payload = new Dictionary<string, object>(this.Payload)
             };
+        }
+
+        public RequestConfig WithRuntimeHeaders(UserConfig userConfig, string pickpointName)
+        {
+            var updatedConfig = this.Clone();
 
             // Добавляем или обновляем заголовки
             var pickpoint = userConfig.PickpointId[pickpointName];
