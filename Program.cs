@@ -38,8 +38,9 @@ namespace WildberriesDudectuions
             }
             long phoneNumber = long.Parse(input);
 
-            string loginResult = await service.GetLogin(loginConfig, phoneNumber);
-            
+            string loginJson = await service.GetLogin(loginConfig, phoneNumber);
+            var loginResponse = ResultsConverter.ConvertLoginResponse(loginJson);
+
             return;
 
             // конец теста логина

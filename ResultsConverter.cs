@@ -14,5 +14,7 @@ namespace WildberriesDudectuions
         public static DefectGoods ConvertDefectGoods(string jsonData) => JsonSerializer.Deserialize<DefectGoods>(jsonData);
         public static ReplaceGoods ConvertReplaceGoods(string jsonData) => JsonSerializer.Deserialize<ReplaceGoods>(jsonData);
         public static TicketsRoot ConvertTickets(string jsonData) => JsonSerializer.Deserialize<TicketsRoot>(jsonData);
+
+        public static Login ConvertLoginResponse(string jsonData) => JsonSerializer.Deserialize<Login>(jsonData);
     }
 }
