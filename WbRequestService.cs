@@ -105,18 +105,6 @@ namespace WildberriesDudectuions
                 ["code"] = code.ToString()
             };
 
-            foreach (var h in requestConfig.Headers)
-            {
-                Debug.WriteLine($"{h.Key}: {h.Value}");
-            }
-
-            Debug.WriteLine("Payload:");
-
-            foreach (var v in payload)
-            {
-                Debug.WriteLine($"{v.Key}: {v.Value}");
-            }
-
             return await SendRequest(requestConfig.Url, HttpMethod.Post, payload, requestConfig.Headers);
         }
     }

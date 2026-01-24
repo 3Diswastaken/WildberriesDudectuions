@@ -2,10 +2,10 @@
 	"Url": "https://r-point.wb.ru/api/v1/login",
 	"Headers": 
 	{
-		"accept": "application/json, text/plain, */*",
-		"content-length": "87",
-		"content-type": "application/json",
-		"x-app-version": "v9.7.345"
+		"Accept": "application/json, text/plain, */*",
+		"Content-Length": "87",
+		"Content-Type": "application/json",
+		"X-App-Version": "v9.7.345"
 	},
 	"Payload":
 	{

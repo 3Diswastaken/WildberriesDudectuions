@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using WildberriesDudectuions.Models;
 
 namespace WildberriesDudectuions
@@ -6,6 +7,7 @@ namespace WildberriesDudectuions
     public static class ConfigLoader
     {
         private static readonly string ConfigDirectory = "C:\\Users\\Руслан\\source\\repos\\3Diswastaken\\WildberriesDudectuions\\configs\\";
+        private static RequestConfig _commonHeaders;
         public static T Load<T>(string fileName)
         {
             string fullPath = Path.Combine(ConfigDirectory, fileName);
@@ -13,12 +15,20 @@ namespace WildberriesDudectuions
             try
             {
                 return JsonSerializer.Deserialize<T>(json);
-
             }
             catch (JsonException ex)
             {
                 throw new Exception($"Failed to deserialize JSON from {fileName}: {ex.Message}", ex);
             }
+        }
+
+        public static RequestConfig LoadCommonHeaders()
+        {
+            if (_commonHeaders == null)
+            {
+                _commonHeaders = Load<RequestConfig>("common-headers.json");
+            }
+            return _commonHeaders;
         }
 
         public static RequestConfig LoadRequest(string fileName)
@@ -31,7 +41,6 @@ namespace WildberriesDudectuions
         }
 
         public static UserConfig LoadUserConfig() => Load<UserConfig>("user.json");
-        public static RequestConfig LoadCommonHeaders() => Load<RequestConfig>("common-headers.json");
 
         public static RequestConfig LoadLogin() => LoadRequest("login.json");
         public static RequestConfig LoadValidate() => LoadRequest("validate.json");
