@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 using WildberriesDudectuions.Models;
 
 
@@ -38,7 +39,7 @@ namespace WildberriesDudectuions
             // нужно только для defect-goods
             url = url.Replace("{dateTo}", Uri.EscapeDataString(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")));
             url = url.Replace("{dateFrom}", Uri.EscapeDataString(DateTime.UtcNow.AddDays(-30).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")));
-            
+
             return url;
         }
 
@@ -66,7 +67,7 @@ namespace WildberriesDudectuions
             foreach (var header in requestConfig.Headers)
             {
                 request.Headers.TryAddWithoutValidation(header.Key, header.Value);
-               // Console.WriteLine($"{header.Key}   {header.Value}");
+                // Console.WriteLine($"{header.Key}   {header.Value}");
             }
 
             var response = await _httpClient.SendAsync(request);
@@ -75,12 +76,49 @@ namespace WildberriesDudectuions
             return await response.Content.ReadAsStringAsync();
         }
 
+        private async Task<string> SendRequest(string url, HttpMethod method, object? payload, Dictionary<string, string>? headers)
+        {
+            var request = new HttpRequestMessage(method, url);
+            if (method == HttpMethod.Post && payload != null)
+            {
+                request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+            }
+
+            if (headers != null)
+                foreach (var header in headers) request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> GetReplaceGoods(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        {
+            
+            string url = BuildUrl(userConfig, requestConfig, pickpointName);
+            
+            return await SendRequest(url, HttpMethod.Get, null, requestConfig.Headers);
+        }
+
+        public async Task<string> GetDefectGoods(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        {
+            string url = BuildUrl(userConfig, requestConfig, pickpointName);
+            return await SendRequest(url, HttpMethod.Get, null, requestConfig.Headers);
+        }
+
+        public async Task<string> GetTickets(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        {
+            string url = BuildUrl(userConfig, requestConfig, pickpointName);
+            
+            return await SendRequest(url, HttpMethod.Post, requestConfig.Payload, requestConfig.Headers);
+        }
+
         public async Task<string> Login(long phoneNumber)
         {
             string url = "https://r-point.wb.ru/api/v1/login";
-            string jsonHeaders = File.ReadAllText("C:\\Users\\rusla\\source\\repos\\WildberriesDudectuions\\configs\\login.json");
+            string jsonHeaders = File.ReadAllText("C:\\Users\\Руслан\\source\\repos\\3Diswastaken\\WildberriesDudectuions\\configs\\login.json");
             var headersDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonHeaders);
-            
+
             var payload = new
             {
                 phone = phoneNumber,
@@ -104,5 +142,7 @@ namespace WildberriesDudectuions
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
+
+
     }
 }

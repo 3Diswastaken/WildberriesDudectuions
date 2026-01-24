@@ -5,7 +5,7 @@ namespace WildberriesDudectuions
 {
     public static class ConfigLoader
     {
-        private static readonly string ConfigDirectory = "C:\\Users\\rusla\\source\\repos\\WildberriesDudectuions\\configs\\";
+        private static readonly string ConfigDirectory = "C:\\Users\\Руслан\\source\\repos\\3Diswastaken\\WildberriesDudectuions\\configs\\";
         public static T Load<T>(string fileName)
         {
             string fullPath = Path.Combine(ConfigDirectory, fileName);
@@ -13,6 +13,7 @@ namespace WildberriesDudectuions
             try
             {
                 return JsonSerializer.Deserialize<T>(json);
+
             }
             catch (JsonException ex)
             {
@@ -20,10 +21,20 @@ namespace WildberriesDudectuions
             }
         }
 
+        public static RequestConfig LoadRequest(string fileName)
+        {
+            var common = LoadCommonHeaders();
+            var config = Load<RequestConfig>(fileName);
+
+            config.ApplyCommonHeaders(common.Headers);
+            return config;
+        }
+
         public static UserConfig LoadUserConfig() => Load<UserConfig>("user.json");
-        public static RequestConfig LoadDefectGoods() => Load<RequestConfig>("defect-goods.json");
-        public static RequestConfig LoadHandingGoods() => Load<RequestConfig>("handing-goods.json");
-        public static RequestConfig LoadReplaceGoods() => Load<RequestConfig>("replace-goods.json");
-        public static RequestConfig LoadTickets() => Load<RequestConfig>("tickets.json");
+        public static RequestConfig LoadCommonHeaders() => LoadRequest("common-headers.json");
+        public static RequestConfig LoadDefectGoods() => LoadRequest("defect-goods.json");
+        public static RequestConfig LoadHandingGoods() => LoadRequest("handing-goods.json");
+        public static RequestConfig LoadReplaceGoods() => LoadRequest("replace-goods.json");
+        public static RequestConfig LoadTickets() => LoadRequest("tickets.json");
     }
 }

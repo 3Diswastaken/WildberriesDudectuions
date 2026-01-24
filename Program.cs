@@ -20,19 +20,33 @@ namespace WildberriesDudectuions
             RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
             RequestConfig ticketsConfig = ConfigLoader.LoadTickets(); // использует post и payload
             RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
-            UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их id
+            UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их 
 
             WbRequestService service = new(httpClient);
 
             List<GoodsInterface> allGoods = new();
 
+            /*
             // тест логина
             long phoneNumber = long.Parse(Console.ReadLine());
-            await service.Login(phoneNumber);
+            string loginResult = await service.Login(phoneNumber);
+            Console.WriteLine(loginResult);
+*/
+
+
+
+
+
+
+            /*Console.WriteLine();
+            Console.WriteLine("Нажмите Enter чтобы завершить тест и выйти...");
+            Console.ReadLine();
+            return;*/
+
             // конец теста логина
 
 
-            foreach (var pickpoint in userConfig.PickpointId)
+            /*foreach (var pickpoint in userConfig.PickpointId)
             {
                 try
                 {
@@ -86,7 +100,7 @@ namespace WildberriesDudectuions
             foreach (var item in sortedGoods)
             {
                 Console.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
-            }
+            }*/
 
             // задержка перед закрытием консоли
             Console.ReadLine();
