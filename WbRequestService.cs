@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -87,11 +88,36 @@ namespace WildberriesDudectuions
             return await SendRequest(url, HttpMethod.Post, requestConfig.Payload, withRuntimeHeaders.Headers);
         }
         // получение 2fa кода
-        public async Task<string> GetLogin(RequestConfig requestConfig, long phoneNumber)
+        public async Task<string> Login(RequestConfig requestConfig, long phoneNumber)
         {
-            string url = requestConfig.Url;
-            requestConfig.Payload["phone"] = phoneNumber;
-            return await SendRequest(url, HttpMethod.Post, requestConfig.Payload, requestConfig.Headers);
+            var payload = new Dictionary<string, object>(requestConfig.Payload)
+            {
+                ["phone"] = phoneNumber
+            };
+            return await SendRequest(requestConfig.Url, HttpMethod.Post, payload, requestConfig.Headers);
+        }
+        // доделать
+        public async Task<string> Validate(RequestConfig requestConfig, string token, int code)
+        {
+            var payload = new Dictionary<string, object>(requestConfig.Payload)
+            {
+                ["token"] = token,
+                ["code"] = code.ToString()
+            };
+
+            foreach (var h in requestConfig.Headers)
+            {
+                Debug.WriteLine($"{h.Key}: {h.Value}");
+            }
+
+            Debug.WriteLine("Payload:");
+
+            foreach (var v in payload)
+            {
+                Debug.WriteLine($"{v.Key}: {v.Value}");
+            }
+
+            return await SendRequest(requestConfig.Url, HttpMethod.Post, payload, requestConfig.Headers);
         }
     }
 }

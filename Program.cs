@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -20,7 +21,8 @@ namespace WildberriesDudectuions
             RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
             RequestConfig ticketsConfig = ConfigLoader.LoadTickets(); // использует post и payload
             RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
-            RequestConfig loginConfig = ConfigLoader.LoadLogin(); 
+            RequestConfig loginConfig = ConfigLoader.LoadLogin();
+            RequestConfig validateConfig = ConfigLoader.LoadValidate();
             UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их 
 
 
@@ -37,9 +39,31 @@ namespace WildberriesDudectuions
                 return;
             }
             long phoneNumber = long.Parse(input);
+            Debug.WriteLine("Телефон указан верно");
 
-            string loginJson = await service.GetLogin(loginConfig, phoneNumber);
+            string loginJson = await service.Login(loginConfig, phoneNumber);
+            Debug.WriteLine("Ответ от login получен");
+
             var loginResponse = ResultsConverter.ConvertLoginResponse(loginJson);
+            Debug.WriteLine("Ответ от login конвертирован");
+
+            Console.WriteLine("Введите код подтверждения, отправленный на ваш номер:");
+            input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.WriteLine("Ошибка: код подтверждения не может быть пустым.");
+                return;
+            }
+            int code = int.Parse(input);
+            Debug.WriteLine("Код подтверждения указан");
+
+            string validateJson = await service.Validate(validateConfig, loginResponse.LoginToken, code);
+            Debug.WriteLine("Ответ от validate получен");
+            var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
+            Debug.WriteLine("Ответ от validate конвертирован");
+
+            Console.WriteLine(validateResponse.Access.Token);
 
             return;
 
