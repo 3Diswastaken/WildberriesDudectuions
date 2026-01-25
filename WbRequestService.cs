@@ -93,6 +93,13 @@ namespace WildberriesDudectuions
 
             return await SendRequest(url, HttpMethod.Post, requestConfig.Payload, withRuntimeHeaders.Headers);
         }
+
+        public async Task<string> GetHandingGoods(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        {
+            string url = BuildUrl(userConfig, requestConfig, pickpointName);
+            var withRuntimeHeaders = InitializeHeaders(userConfig, requestConfig, pickpointName);
+            return await SendRequest(url, HttpMethod.Get, null, withRuntimeHeaders.Headers);
+        }
         // получение 2fa кода
         public async Task<string> Login(RequestConfig requestConfig, long phoneNumber)
         {

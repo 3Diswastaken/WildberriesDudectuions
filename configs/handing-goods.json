@@ -1,0 +1,10 @@
+{
+	"Url": "https://s-point.wb.ru/s{shard}/api/v2/handing-report-2/box-goods/list?pickpoint_id={pickpointId}",
+	"Headers":
+	{
+		"Accept": "application/json, text/plain, */*",
+		"X-PickPoint-External-Id": "0",
+		"X-PickPoint-Id": "0",
+		"X-Token": ""
+	}
+}

@@ -21,6 +21,7 @@ namespace WildberriesDudectuions
             RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
             RequestConfig ticketsConfig = ConfigLoader.LoadTickets(); // использует post и payload
             RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
+            RequestConfig handingGoodsConfig = ConfigLoader.LoadHandingGoods();
             RequestConfig loginConfig = ConfigLoader.LoadLogin();
             RequestConfig validateConfig = ConfigLoader.LoadValidate();
             RequestConfig switchConfig = ConfigLoader.LoadSwitch();
@@ -58,16 +59,59 @@ namespace WildberriesDudectuions
             var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
 
             string accessToken = validateResponse.Access.Token;
-            Console.WriteLine($"Access Token: {accessToken}");
 
             string switchJson = await service.Switch(userConfig, switchConfig, accessToken, "p105");
             var switchResponse = ResultsConverter.ConvertSwitchResponse(switchJson);
-            Console.WriteLine($"Switch Token: {switchResponse.Access.Token}");
+            
+            string requestToken = switchResponse.Access.Token;
 
+            userConfig.Token = requestToken;
 
+            try
+            {
+                string jsonDefectData = await service.GetDefectGoods(userConfig, defectGoodsConfig, "p105");
+                var resultDefectGoods = ResultsConverter.ConvertDefectGoods(jsonDefectData);
+                
+                foreach (var item in resultDefectGoods.DefectGoodsList)
+                {
+                    if (item.TicketId == 0)
+                    {
+                        item.Pickpoint = "p105";
+                        allGoods.Add(item);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при запросе бракованных товаров: {ex.Message}");
+            }
 
+            try
+            {
+                string jsonHandingData = await service.GetHandingGoods(userConfig, handingGoodsConfig, "p105");
+                var resultHandingGoods = ResultsConverter.ConvertHandingGoods(jsonHandingData);
 
-            return;
+                foreach (var item in resultHandingGoods.data.HandingGoodsList)
+                {
+                    if (item.Type == "expired")
+                    {
+                        item.Pickpoint = "p105";
+                        allGoods.Add(item);
+
+                        Console.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
+                    }
+                }
+
+                    foreach (var item in resultHandingGoods.data.HandingGoodsList)
+                    {
+                        Debug.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
+                    }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Ошибка при запросе зависших шк: {ex.Message}");
+            }
+
 
             // конец теста логина
 
