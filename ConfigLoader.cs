@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
-using WildberriesDudectuions.Models;
+using WildberriesDeductions.Models;
 
-namespace WildberriesDudectuions
+namespace WildberriesDeductions
 {
     public static class ConfigLoader
     {

@@ -7,9 +7,9 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using WildberriesDudectuions.Models;
+using WildberriesDeductions.Models;
 
-namespace WildberriesDudectuions
+namespace WildberriesDeductions
 {
     class Program
     {
@@ -17,33 +17,12 @@ namespace WildberriesDudectuions
         {
             HttpClient httpClient = new HttpClient();
 
-            // конфиг на каждый тип удержаний со своими url и headers
-            RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
-            RequestConfig ticketsConfig = ConfigLoader.LoadTickets(); // использует post и payload
-            RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
-            RequestConfig handingGoodsConfig = ConfigLoader.LoadHandingGoods();
-            RequestConfig loginConfig = ConfigLoader.LoadLogin();
-            RequestConfig validateConfig = ConfigLoader.LoadValidate();
-            RequestConfig switchConfig = ConfigLoader.LoadSwitch();
-            UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их 
-
-            WbRequestService service = new(httpClient);
+            Client client = new(httpClient);
 
             List<GoodsInterface> allGoods = new();
 
-            // тест логина
-            Console.WriteLine("Введите номер телефона для логина (только цифры, начиная с семи):");
-            string? input = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                Console.WriteLine("Ошибка: номер телефона не может быть пустым.");
-                return;
-            }
-            long phoneNumber = long.Parse(input);
-
-            string loginJson = await service.Login(loginConfig, phoneNumber);
-
-            var loginResponse = ResultsConverter.ConvertLoginResponse(loginJson);
+            await client.TryLoginAsync(79605174813);
+            string? input = null;
 
             Console.WriteLine("Введите код подтверждения, отправленный на ваш номер:");
             input = Console.ReadLine();
@@ -55,124 +34,26 @@ namespace WildberriesDudectuions
             }
             int code = int.Parse(input);
 
-            string validateJson = await service.Validate(validateConfig, loginResponse.LoginToken, code);
-            var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
+            await client.TryValidateAsync(code);
 
-            string accessToken = validateResponse.Access.Token;
-
-            string switchJson = await service.Switch(userConfig, switchConfig, accessToken, "p105");
-            var switchResponse = ResultsConverter.ConvertSwitchResponse(switchJson);
-            
-            string requestToken = switchResponse.Access.Token;
-
-            userConfig.Token = requestToken;
-
-            try
+            List<string> pickpoints = new() { "p105", "p10" };
+            foreach (var pickpoint in pickpoints)
             {
-                string jsonDefectData = await service.GetDefectGoods(userConfig, defectGoodsConfig, "p105");
-                var resultDefectGoods = ResultsConverter.ConvertDefectGoods(jsonDefectData);
+                await client.TrySwitchAsync(pickpoint);  
                 
-                foreach (var item in resultDefectGoods.DefectGoodsList)
-                {
-                    if (item.TicketId == 0)
-                    {
-                        item.Pickpoint = "p105";
-                        allGoods.Add(item);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при запросе бракованных товаров: {ex.Message}");
+                var handingGoods = await client.GetHandingGoodsAsync(pickpoint);
+                allGoods.AddRange(handingGoods);
+                var defectGoods = await client.GetDefectGoodsAsync(pickpoint);
+                allGoods.AddRange(defectGoods);
+                var replaceGoods = await client.GetReplaceGoodsAsync(pickpoint);
+                allGoods.AddRange(replaceGoods);
             }
 
-            try
+            foreach (var item in allGoods.OrderBy(g => g.OnHoldDate))
             {
-                string jsonHandingData = await service.GetHandingGoods(userConfig, handingGoodsConfig, "p105");
-                var resultHandingGoods = ResultsConverter.ConvertHandingGoods(jsonHandingData);
-
-                foreach (var item in resultHandingGoods.data.HandingGoodsList)
-                {
-                    if (item.Type == "expired")
-                    {
-                        item.Pickpoint = "p105";
-                        allGoods.Add(item);
-
-                        Console.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
-                    }
-                }
-
-                    foreach (var item in resultHandingGoods.data.HandingGoodsList)
-                    {
-                        Debug.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
-                    }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"Ошибка при запросе зависших шк: {ex.Message}");
+                Console.WriteLine($"{item.OnHoldDate?.ToString("dd.MM.yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Shk} {item.Reason} {item.Price} {item.TicketId} {item.Pickpoint}");
             }
 
-
-            // конец теста логина
-
-
-            /*foreach (var pickpoint in userConfig.PickpointId)
-            {
-                try
-                {
-                    // получаем подмены
-                    // сначала получаем полный ответ в виде json
-                    string jsonData = await service.GetDataForPickpoint(userConfig, replaceGoodsConfig, pickpoint.Key);
-                    // конвертируем json в объект
-                    var resultReplaceGoods = ResultsConverter.ConvertReplaceGoods(jsonData);
-                    // если у товара нет тикета, значит он не обработан и его нужно учитывать
-                    foreach (var item in resultReplaceGoods.ReplaceGoodsList)
-                    {
-                        if (item.TicketId == 0)
-                        {
-                            item.Pickpoint = pickpoint.Key;
-                            allGoods.Add(item);
-                        }
-                    }
-
-                    // получаем брак
-                    jsonData = await service.GetDataForPickpoint(userConfig, defectGoodsConfig, pickpoint.Key);
-                    var resultDefectGoods = ResultsConverter.ConvertDefectGoods(jsonData);
-                    foreach (var item in resultDefectGoods.DefectGoodsList)
-                    {
-                        if (item.TicketId == 0 && item.BalanceStatus == "to_hold")
-                        {
-                            item.Pickpoint = pickpoint.Key;
-                            allGoods.Add(item);
-                        }
-                    }
-
-                    // получаем тикеты
-                    jsonData = await service.GetDataForPickpoint(userConfig, ticketsConfig, pickpoint.Key);
-                    var reslutTickets = ResultsConverter.ConvertTickets(jsonData);
-                    foreach (var item in reslutTickets.Tickets)
-                    {
-                        if (item.OnHoldDate != null)
-                        {
-                            item.Pickpoint = pickpoint.Key;
-                            allGoods.Add(item);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Ошибка при запросе {ex.Message}");
-                }
-            }
-
-            // сортировка по дате удержания полученных удержаний
-            var sortedGoods = allGoods.OrderBy(g => g.OnHoldDate);
-            foreach (var item in sortedGoods)
-            {
-                Console.WriteLine($"{item.OnHoldDate?.ToString("dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Reason} {item.Pickpoint}");
-            }*/
-
-            // задержка перед закрытием консоли
             Console.ReadLine();
         }
     }

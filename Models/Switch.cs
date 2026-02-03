@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WildberriesDudectuions.Models
+namespace WildberriesDeductions.Models
 {
-    public class Switch
+    public class SwitchRoot
     {
         [JsonPropertyName("access")]
         public AccessSwitchToken Access { get; set; } = new();

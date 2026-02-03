@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WildberriesDudectuions.Models
+namespace WildberriesDeductions.Models
 {
 
     public class HandingGoodsRoot
@@ -16,9 +16,9 @@ namespace WildberriesDudectuions.Models
     public class HandingGoodsData
     {
         [JsonPropertyName("goods")]
-        public List<HandingGoods> HandingGoodsList { get; set; } = new();
+        public List<HandingGood> Goods { get; set; } = new();
     }
-    public class HandingGoods : GoodsInterface
+    public class HandingGood : GoodsInterface
     {
         [JsonPropertyName("scanned_code")]
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]

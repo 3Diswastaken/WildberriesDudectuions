@@ -5,8 +5,14 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WildberriesDudectuions.Models
+namespace WildberriesDeductions.Models
 {
+    public class DefectGoodsRoot
+    {
+        [JsonPropertyName("defect_products")]
+        public List<DefectGood> Goods { get; set; } = new();
+    }
+
     public class DefectGood : GoodsInterface
     {
         public string Reason { get; set; } = "Брак";
@@ -24,20 +30,12 @@ namespace WildberriesDudectuions.Models
         public string DefectType { get; set; } = "";
 
         [JsonPropertyName("balance_status")]
-        public string BalanceStatus { get; set; } = "";
-
-        
+        public string BalanceStatus { get; set; } = ""; 
 
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";
-    }
-
-    public class DefectGoods
-    {
-        [JsonPropertyName("defect_products")]
-        public List<DefectGood> DefectGoodsList { get; set; } = new();
     }
 }

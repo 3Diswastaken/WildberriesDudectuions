@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WildberriesDudectuions.Models
+namespace WildberriesDeductions.Models
 {
     public class PickpointId
     {
@@ -21,6 +21,5 @@ namespace WildberriesDudectuions.Models
         public Dictionary<string, PickpointId> PickpointId { get; set; } = new();
         [JsonPropertyName("X-Token")]
         public string Token { get; set; } = "";
-        
     }
 }

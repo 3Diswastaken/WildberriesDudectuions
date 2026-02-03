@@ -5,19 +5,19 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using WildberriesDeductions.Models;
-using WildberriesDudectuions.Models;
+using WildberriesDeductions.Models;
 
-namespace WildberriesDudectuions
+namespace WildberriesDeductions
 {
     public static class ResultsConverter
     {
-        public static DefectGoods ConvertDefectGoods(string jsonData) => JsonSerializer.Deserialize<DefectGoods>(jsonData);
-        public static ReplaceGoods ConvertReplaceGoods(string jsonData) => JsonSerializer.Deserialize<ReplaceGoods>(jsonData);
+        public static DefectGoodsRoot ConvertDefectGoods(string jsonData) => JsonSerializer.Deserialize<DefectGoodsRoot>(jsonData);
+        public static ReplaceGoodsRoot ConvertReplaceGoods(string jsonData) => JsonSerializer.Deserialize<ReplaceGoodsRoot>(jsonData);
         public static HandingGoodsRoot ConvertHandingGoods(string jsonData) => JsonSerializer.Deserialize<HandingGoodsRoot>(jsonData);
         public static TicketsRoot ConvertTickets(string jsonData) => JsonSerializer.Deserialize<TicketsRoot>(jsonData);
-        public static Login ConvertLoginResponse(string jsonData) => JsonSerializer.Deserialize<Login>(jsonData);
-        public static Validate ConvertValidateResponse(string jsonData) => JsonSerializer.Deserialize<Validate>(jsonData);
-        public static Switch ConvertSwitchResponse(string jsonData) => JsonSerializer.Deserialize<Switch>(jsonData);
+        public static LoginRoot ConvertLoginResponse(string jsonData) => JsonSerializer.Deserialize<LoginRoot>(jsonData);
+        public static ValidateRoot ConvertValidateResponse(string jsonData) => JsonSerializer.Deserialize<ValidateRoot>(jsonData);
+        public static SwitchRoot ConvertSwitchResponse(string jsonData) => JsonSerializer.Deserialize<SwitchRoot>(jsonData);
 
     }
 }

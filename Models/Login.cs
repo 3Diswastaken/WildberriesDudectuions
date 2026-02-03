@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WildberriesDudectuions.Models
+namespace WildberriesDeductions.Models
 {
-    public class Login
+    public class LoginRoot
     {
         [JsonPropertyName("data")]
         public string LoginToken { get; set; } = "";

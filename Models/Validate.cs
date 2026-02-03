@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WildberriesDudectuions.Models
+namespace WildberriesDeductions.Models
 {
-    public class Validate
+    public class ValidateRoot
     {
         [JsonPropertyName("access")]
         public AccessToken Access { get; set; } = new AccessToken();

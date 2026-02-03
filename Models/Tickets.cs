@@ -4,21 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
-using WildberriesDudectuions.Models;
+using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions.Models
 {
-    public class TicketHistory
+    public class TicketsRoot
     {
-        [JsonPropertyName("create_date")]
-        public string CreateDateRaw { get; set; } = "";
-        public DateTime? CreateDate => String.IsNullOrEmpty(CreateDateRaw) ? null : DateTimeOffset.Parse(CreateDateRaw).LocalDateTime;
-        [JsonPropertyName("state_name")]
-        public string StateName { get; set; } = "";
+        [JsonPropertyName("data")]
+        public List<Ticket> Tickets { get; set; } = new();
     }
 
     public class Ticket : GoodsInterface
     {
+        [JsonPropertyName("ticket_history")]
+        public List<TicketHistory> History { get; set; } = new();
+
+
         public string Reason { get; set; } = "Тикет";
         public string Pickpoint { get; set; } = "";
         public long Shk { get; set; } = 0;
@@ -37,13 +38,13 @@ namespace WildberriesDeductions.Models
         [JsonPropertyName("id")]
         public long TicketId { get; set; }
         public decimal Price { get; set; } = 0;
-        
-        [JsonPropertyName("ticket_history")]
-        public List<TicketHistory> History{ get; set; } = new();
     }
-    public class TicketsRoot
+    public class TicketHistory
     {
-        [JsonPropertyName("data")]
-        public List<Ticket> Tickets { get; set; } = new();
+        [JsonPropertyName("create_date")]
+        public string CreateDateRaw { get; set; } = "";
+        public DateTime? CreateDate => String.IsNullOrEmpty(CreateDateRaw) ? null : DateTimeOffset.Parse(CreateDateRaw).LocalDateTime;
+        [JsonPropertyName("state_name")]
+        public string StateName { get; set; } = "";
     }
 }

@@ -4,10 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using WildberriesDudectuions.Models;
 
 namespace WildberriesDeductions.Models
 {
+    public class ReplaceGoodsRoot
+    {
+        [JsonPropertyName("goods")]
+        public List<ReplaceGood> Goods { get; set; } = new();
+    }
+
     public class ReplaceGood : GoodsInterface
     {
         public string Reason { get; set; } = "Подмена";
@@ -24,11 +29,5 @@ namespace WildberriesDeductions.Models
 
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }
-    }
-
-    public class ReplaceGoods
-    {
-        [JsonPropertyName("goods")]
-        public List<ReplaceGood> ReplaceGoodsList { get; set; } = new();
     }
 }

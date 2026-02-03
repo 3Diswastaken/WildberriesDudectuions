@@ -2,7 +2,7 @@
 using System.Text.Json;
 
 
-namespace WildberriesDudectuions.Models
+namespace WildberriesDeductions.Models
 {
     public class RequestConfig
     {

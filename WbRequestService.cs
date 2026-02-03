@@ -6,10 +6,10 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using WildberriesDudectuions.Models;
+using WildberriesDeductions.Models;
 
 
-namespace WildberriesDudectuions
+namespace WildberriesDeductions
 {
     public class WbRequestService
     {
@@ -121,22 +121,15 @@ namespace WildberriesDudectuions
             return await SendRequest(requestConfig.Url, HttpMethod.Post, payload, requestConfig.Headers);
         }
 
-        // получение нового токена при смене пвз (response code 400)
+        // получение нового токена при смене пвз
         public async Task<string> Switch(UserConfig userConfig, RequestConfig requestConfig, string token, string pickpointName)
         {
             string url = BuildUrl(userConfig, requestConfig, pickpointName);
+
             var headers = new Dictionary<string, string>(requestConfig.Headers)
             {
                 ["X-Token"] = token
             };
-            Debug.WriteLine($"Switch request url: {url}");
-
-
-            Debug.WriteLine("Switch request headers:");
-            foreach (var header in headers)
-            {
-                Debug.WriteLine($"{header.Key}: {header.Value}");
-            }
 
             return await SendRequest(url, HttpMethod.Get, null, headers);
         }
