@@ -17,30 +17,41 @@ namespace WildberriesDeductions
         {
             HttpClient httpClient = new HttpClient();
 
-            Client client = new(httpClient);
+            var storage = new TokenStorage();
+            AuthService authService = new(storage);
+
+            Client client = new(httpClient, authService);
 
             List<GoodsInterface> allGoods = new();
 
-            await client.TryLoginAsync(79605174813);
-            string? input = null;
 
-            Console.WriteLine("Введите код подтверждения, отправленный на ваш номер:");
-            input = Console.ReadLine();
 
-            if (string.IsNullOrWhiteSpace(input))
+            if (!client.isTokenValid())
             {
-                Console.WriteLine("Ошибка: код подтверждения не может быть пустым.");
-                return;
-            }
-            int code = int.Parse(input);
+                Console.WriteLine("Токен недействителен или отсутствует. Необходимо выполнить вход.");
 
-            await client.TryValidateAsync(code);
+                await client.TryLoginAsync(79605174813);
+                string? input = null;
+
+                Console.WriteLine("Введите код подтверждения, отправленный на ваш номер:");
+                input = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Console.WriteLine("Ошибка: код подтверждения не может быть пустым.");
+                    return;
+                }
+                int code = int.Parse(input);
+
+                await client.TryValidateAsync(code);
+
+            }
 
             List<string> pickpoints = new() { "p105", "p10" };
             foreach (var pickpoint in pickpoints)
             {
-                await client.TrySwitchAsync(pickpoint);  
-                
+                await client.TrySwitchAsync(pickpoint);
+
                 var handingGoods = await client.GetHandingGoodsAsync(pickpoint);
                 allGoods.AddRange(handingGoods);
                 var defectGoods = await client.GetDefectGoodsAsync(pickpoint);

@@ -8,7 +8,7 @@ using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
 {
-    public class Client(HttpClient httpClient)
+    public class Client(HttpClient httpClient, AuthService authService)
     {
         // конфиг на каждый тип удержаний со своими url и headers
         RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
@@ -23,7 +23,7 @@ namespace WildberriesDeductions
         WbRequestService service = new WbRequestService(httpClient);
 
         private string _accessToken = string.Empty;
-        private string _switchToken = string.Empty;
+        private string _switchToken = authService.Load();
         public async Task TryLoginAsync(long phoneNumber)
         {
             try
@@ -47,11 +47,18 @@ namespace WildberriesDeductions
                 var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
                 _switchToken = validateResponse.Access.Token;
                 Debug.WriteLine("Запрос validate выполнен");
+
+                authService.Save(_switchToken);
             }
             catch
             {
                 Console.WriteLine("Ошибка при валидации кода. Проверьте код и повторите попытку.");
             }
+        }
+
+        public bool isTokenValid()
+        {
+            return authService.IsTokenValid();
         }
 
         public async Task TrySwitchAsync(string pickpointName)
