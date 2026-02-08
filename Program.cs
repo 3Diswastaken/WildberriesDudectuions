@@ -47,18 +47,26 @@ namespace WildberriesDeductions
             }
 
             List<string> pickpoints = new() { "p105", "p10" };
-            foreach (var pickpoint in pickpoints)
-            {
-                await client.TrySwitchAsync(pickpoint);
+            await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
+                {
+                    foreach (var pickpoint in pickpoints)
+                    {
+                        ctx.Status($"Переключение на {pickpoint}...");
+                        await client.TrySwitchAsync(pickpoint);
+                        
+                        ctx.Status($"Получение зависших шк для {pickpoint}...");
+                        var handingGoods = await client.GetHandingGoodsAsync(pickpoint);
+                        allGoods.AddRange(handingGoods);
 
-                var handingGoods = await client.GetHandingGoodsAsync(pickpoint);
-                allGoods.AddRange(handingGoods);
-                var defectGoods = await client.GetDefectGoodsAsync(pickpoint);
-                allGoods.AddRange(defectGoods);
-                var replaceGoods = await client.GetReplaceGoodsAsync(pickpoint);
-                allGoods.AddRange(replaceGoods);
-            }
+                        ctx.Status($"Получение брака шк для {pickpoint}...");
+                        var defectGoods = await client.GetDefectGoodsAsync(pickpoint);
+                        allGoods.AddRange(defectGoods);
 
+                        ctx.Status($"Получение подмен для {pickpoint}...");
+                        var replaceGoods = await client.GetReplaceGoodsAsync(pickpoint);
+                        allGoods.AddRange(replaceGoods);
+                    }
+                });
             SpectreConsole.PrintDeductionGoods(allGoods);
 
             Console.ReadLine();

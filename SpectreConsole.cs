@@ -15,6 +15,8 @@ namespace WildberriesDeductions
         {
             Table table = new Table();
             table.AddColumns("Дата удержания", "Вид удержания", "ПВЗ", "Стоимость", "ШК");
+            table.Title("Удержания");
+            allGoods = allGoods.OrderBy(g => g.OnHoldDate).ToList();
             foreach (var goods in allGoods)
             {
                 string price = goods.Price.ToString();
