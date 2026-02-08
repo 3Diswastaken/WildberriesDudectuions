@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spectre.Console;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -24,9 +25,7 @@ namespace WildberriesDeductions
 
             List<GoodsInterface> allGoods = new();
 
-
-
-            if (!client.isTokenValid())
+            if (!client.IsTokenValid())
             {
                 Console.WriteLine("Токен недействителен или отсутствует. Необходимо выполнить вход.");
 
@@ -60,10 +59,7 @@ namespace WildberriesDeductions
                 allGoods.AddRange(replaceGoods);
             }
 
-            foreach (var item in allGoods.OrderBy(g => g.OnHoldDate))
-            {
-                Console.WriteLine($"{item.OnHoldDate?.ToString("dd.MM.yy HH:mm:ss", CultureInfo.InvariantCulture)} {item.Shk} {item.Reason} {item.Price} {item.TicketId} {item.Pickpoint}");
-            }
+            SpectreConsole.PrintDeductionGoods(allGoods);
 
             Console.ReadLine();
         }

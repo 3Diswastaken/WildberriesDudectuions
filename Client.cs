@@ -56,7 +56,7 @@ namespace WildberriesDeductions
             }
         }
 
-        public bool isTokenValid()
+        public bool IsTokenValid()
         {
             return authService.IsTokenValid();
         }

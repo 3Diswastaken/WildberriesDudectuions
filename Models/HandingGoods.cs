@@ -24,7 +24,12 @@ namespace WildberriesDeductions.Models
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long Shk { get; set; }
         [JsonPropertyName("on_hold_date")]
-        public DateTime? OnHoldDate { get; set; }
+        private DateTime? _onHoldDate;
+        public DateTime? OnHoldDate 
+        { 
+            get => _onHoldDate; 
+            set => value?.ToLocalTime(); 
+        }
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }
 

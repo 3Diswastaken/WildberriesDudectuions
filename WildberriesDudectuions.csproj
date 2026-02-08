@@ -10,6 +10,7 @@
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.54.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
   </ItemGroup>
 
