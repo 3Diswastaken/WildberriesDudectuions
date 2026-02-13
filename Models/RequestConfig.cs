@@ -34,7 +34,7 @@ namespace WildberriesDeductions.Models
             var updatedConfig = this.Clone();
 
             // Добавляем или обновляем заголовки
-            var pickpoint = userConfig.PickpointId[pickpointName];
+            var pickpoint = userConfig.PickpointInfo[pickpointName];
 
             updatedConfig.Headers["X-PickPoint-External-Id"] = pickpoint.ExternalId;
             updatedConfig.Headers["X-PickPoint-Id"] = pickpoint.Id;

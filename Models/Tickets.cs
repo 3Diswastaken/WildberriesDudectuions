@@ -16,8 +16,8 @@ namespace WildberriesDeductions.Models
 
     public class Ticket : GoodsInterface
     {
-        [JsonPropertyName("ticket_history")]
-        public List<TicketHistory> History { get; set; } = new();
+        [JsonPropertyName("support_logs")]
+        public List<TicketHistory> Logs { get; set; } = new();
 
 
         public string Reason { get; set; } = "Тикет";
@@ -27,9 +27,9 @@ namespace WildberriesDeductions.Models
         {
             get 
             {
-                if (History?.Count > 0 && History[^1].StateName == "in_progress")
+                if (Logs?.Count > 0 && Logs[^1].FullName.Trim() != "Руслан")
                 {
-                    return History[^1].CreateDate;
+                    return Logs[^1].CreateDate!.Value.AddDays(2);
                 }
                 return null;
             }
@@ -38,13 +38,15 @@ namespace WildberriesDeductions.Models
         [JsonPropertyName("id")]
         public long TicketId { get; set; }
         public decimal Price { get; set; } = 0;
+        [JsonPropertyName("ticket_state_id")]
+        public int State { get; set; }
     }
     public class TicketHistory
     {
         [JsonPropertyName("create_date")]
         public string CreateDateRaw { get; set; } = "";
         public DateTime? CreateDate => String.IsNullOrEmpty(CreateDateRaw) ? null : DateTimeOffset.Parse(CreateDateRaw).LocalDateTime;
-        [JsonPropertyName("state_name")]
-        public string StateName { get; set; } = "";
+        [JsonPropertyName("fio")]
+        public string FullName { get; set; } = "";
     }
 }

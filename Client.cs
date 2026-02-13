@@ -18,7 +18,7 @@ namespace WildberriesDeductions
         RequestConfig loginConfig = ConfigLoader.LoadLogin();
         RequestConfig validateConfig = ConfigLoader.LoadValidate();
         RequestConfig switchConfig = ConfigLoader.LoadSwitch();
-        UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их 
+        UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их инфой
 
         WbRequestService service = new WbRequestService(httpClient);
 
@@ -140,6 +140,31 @@ namespace WildberriesDeductions
                 Console.WriteLine($"Ошибка при получении данных об удержаниях по зависшим ШК на пвз {pickpointName}.");
             }
             return handingGoods;
+        }
+
+        public async Task<List<Ticket>> GetTicketAsync(string pickpointName)
+        {
+            List<Ticket> tickets = new();
+            try
+            {
+                string resultJson = await service.GetTickets(userConfig, ticketsConfig, pickpointName);
+                var resultTickets = ResultsConverter.ConvertTickets(resultJson);
+                Debug.WriteLine($"Запрос tickets на {pickpointName} выполнен.");
+                foreach (var item in resultTickets.Tickets)
+                {
+                    if (item.State != 3 && item.TicketId != 0 && item.OnHoldDate != null)
+                    {
+                        item.Pickpoint = pickpointName;
+                        tickets.Add(item);
+                        Debug.WriteLine($"{item.TicketId}, {item.OnHoldDate}, {item.Logs[^1].FullName} ");
+                    }
+                }
+            }
+            catch
+            {
+                Console.WriteLine($"Ошибка при получении данных о тикетах на пвз {pickpointName}.");
+            }
+            return tickets;
         }
     }
 }

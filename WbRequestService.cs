@@ -25,7 +25,7 @@ namespace WildberriesDeductions
         {
             RequestConfig clone = requestConfig.Clone();
 
-            var pickpoint = userConfig.PickpointId[pickpointName];
+            var pickpoint = userConfig.PickpointInfo[pickpointName];
 
             clone.Headers["X-PickPoint-External-Id"] = pickpoint.ExternalId;
             clone.Headers["X-PickPoint-Id"] = pickpoint.Id;
@@ -39,13 +39,13 @@ namespace WildberriesDeductions
         {
             string url = requestConfig.Url;
 
-            string externalPickpointId = userConfig.PickpointId[pickpointName].ExternalId;
+            string externalPickpointId = userConfig.PickpointInfo[pickpointName].ExternalId;
             url = url.Replace("{pickpointId}", externalPickpointId);
 
-            string internalPickpointId = userConfig.PickpointId[pickpointName].Id;
+            string internalPickpointId = userConfig.PickpointInfo[pickpointName].Id;
             url = url.Replace("{internalPickpointId}", internalPickpointId);
 
-            string shard = userConfig.PickpointId[pickpointName].Shard;
+            string shard = userConfig.PickpointInfo[pickpointName].Shard;
             url = url.Replace("{shard}", shard);
 
             // нужно только для defect-goods

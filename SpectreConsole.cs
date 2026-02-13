@@ -21,12 +21,19 @@ namespace WildberriesDeductions
             {
                 string price = goods.Price.ToString();
                 price += " руб.";
+                string Shk = goods.Shk.ToString();
+                if (goods.GetType() == typeof(Ticket))
+                {
+                    Shk = goods.TicketId.ToString();
+                    price = "-";
+                }
+
                 table.AddRow(
                     goods.OnHoldDate?.ToString("dd.MM.yy HH:mm:ss", CultureInfo.InvariantCulture),
                     goods.Reason,
                     goods.Pickpoint,
                     price,
-                    goods.Shk.ToString()
+                    Shk
                 );
             }
             AnsiConsole.Write(table);

@@ -58,13 +58,17 @@ namespace WildberriesDeductions
                         var handingGoods = await client.GetHandingGoodsAsync(pickpoint);
                         allGoods.AddRange(handingGoods);
 
-                        ctx.Status($"Получение брака шк для {pickpoint}...");
+                        ctx.Status($"Получение брака для {pickpoint}...");
                         var defectGoods = await client.GetDefectGoodsAsync(pickpoint);
                         allGoods.AddRange(defectGoods);
 
                         ctx.Status($"Получение подмен для {pickpoint}...");
                         var replaceGoods = await client.GetReplaceGoodsAsync(pickpoint);
                         allGoods.AddRange(replaceGoods);
+
+                        ctx.Status($"Получение тикетов для {pickpoint}...");
+                        var tickets = await client.GetTicketAsync(pickpoint);
+                        allGoods.AddRange(tickets);
                     }
                 });
             SpectreConsole.PrintDeductionGoods(allGoods);
