@@ -1,10 +1,6 @@
 ﻿using Spectre.Console;
-using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
@@ -29,7 +25,7 @@ namespace WildberriesDeductions
                 }
 
                 table.AddRow(
-                    goods.OnHoldDate?.ToString("dd.MM.yy HH:mm:ss", CultureInfo.InvariantCulture),
+                    goods.OnHoldDate?.ToLocalTime().ToString(),
                     goods.Reason,
                     goods.Pickpoint,
                     price,

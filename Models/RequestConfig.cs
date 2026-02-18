@@ -1,8 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Text.Json;
-
-
-namespace WildberriesDeductions.Models
+﻿namespace WildberriesDeductions.Models
 {
     public class RequestConfig
     {
@@ -18,7 +14,7 @@ namespace WildberriesDeductions.Models
                     Headers[header.Key] = header.Value;
         }
 
-        public RequestConfig Clone ()
+        public RequestConfig Clone()
         {
             return new RequestConfig
             {

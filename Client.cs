@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
@@ -70,7 +65,7 @@ namespace WildberriesDeductions
             userConfig.Token = requestToken;
         }
 
-        public async Task<List<DefectGood>> GetDefectGoodsAsync(string pickpointName)
+        public async Task<List<DefectGood>> TryGetDefectGoodsAsync(string pickpointName)
         {
             List<DefectGood> defectGoods = new();
             try
@@ -91,11 +86,11 @@ namespace WildberriesDeductions
             {
                 Console.WriteLine($"Ошибка при получении данных об удержаниях по бракованным товарам на пвз {pickpointName}.");
             }
-            
+
             return defectGoods;
         }
 
-        public async Task<List<ReplaceGood>> GetReplaceGoodsAsync(string pickpointName)
+        public async Task<List<ReplaceGood>> TryGetReplaceGoodsAsync(string pickpointName)
         {
             List<ReplaceGood> replaceGoods = new();
             try
@@ -118,12 +113,13 @@ namespace WildberriesDeductions
             }
             return replaceGoods;
         }
-        public async Task<List<HandingGood>> GetHandingGoodsAsync(string pickpointName)
+        public async Task<List<HandingGood>> TryGetHandingGoodsAsync(string pickpointName)
         {
             List<HandingGood> handingGoods = new();
             try
             {
                 string resultJson = await service.GetHandingGoods(userConfig, handingGoodsConfig, pickpointName);
+                Debug.WriteLine(resultJson);
                 var resultHandingGoods = ResultsConverter.ConvertHandingGoods(resultJson);
                 Debug.WriteLine($"Запрос handingGoods на {pickpointName} выполнен.");
                 foreach (var item in resultHandingGoods.data.Goods)
@@ -142,7 +138,7 @@ namespace WildberriesDeductions
             return handingGoods;
         }
 
-        public async Task<List<Ticket>> GetTicketAsync(string pickpointName)
+        public async Task<List<Ticket>> TryGetTicketsAsync(string pickpointName)
         {
             List<Ticket> tickets = new();
             try
@@ -156,7 +152,6 @@ namespace WildberriesDeductions
                     {
                         item.Pickpoint = pickpointName;
                         tickets.Add(item);
-                        Debug.WriteLine($"{item.TicketId}, {item.OnHoldDate}, {item.Logs[^1].FullName} ");
                     }
                 }
             }

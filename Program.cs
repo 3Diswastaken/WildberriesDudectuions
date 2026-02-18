@@ -1,13 +1,5 @@
 ﻿using Spectre.Console;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
@@ -53,21 +45,26 @@ namespace WildberriesDeductions
                     {
                         ctx.Status($"Переключение на {pickpoint}...");
                         await client.TrySwitchAsync(pickpoint);
-                        
+
                         ctx.Status($"Получение зависших шк для {pickpoint}...");
-                        var handingGoods = await client.GetHandingGoodsAsync(pickpoint);
+                        var handingGoods = await client.TryGetHandingGoodsAsync(pickpoint);
                         allGoods.AddRange(handingGoods);
 
+                        foreach (var good in handingGoods)
+                        {
+                            Debug.WriteLine($"Зависший шк: {good.Shk}, дата: {good.OnHoldDate}, пвз: {pickpoint}");
+                        }
+
                         ctx.Status($"Получение брака для {pickpoint}...");
-                        var defectGoods = await client.GetDefectGoodsAsync(pickpoint);
+                        var defectGoods = await client.TryGetDefectGoodsAsync(pickpoint);
                         allGoods.AddRange(defectGoods);
 
                         ctx.Status($"Получение подмен для {pickpoint}...");
-                        var replaceGoods = await client.GetReplaceGoodsAsync(pickpoint);
+                        var replaceGoods = await client.TryGetReplaceGoodsAsync(pickpoint);
                         allGoods.AddRange(replaceGoods);
 
                         ctx.Status($"Получение тикетов для {pickpoint}...");
-                        var tickets = await client.GetTicketAsync(pickpoint);
+                        var tickets = await client.TryGetTicketsAsync(pickpoint);
                         allGoods.AddRange(tickets);
                     }
                 });

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using WildberriesDeductions.Models;
+﻿using System.Text.Json;
 using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions

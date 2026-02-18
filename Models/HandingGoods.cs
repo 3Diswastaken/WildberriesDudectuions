@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace WildberriesDeductions.Models
 {
@@ -23,13 +18,10 @@ namespace WildberriesDeductions.Models
         [JsonPropertyName("scanned_code")]
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long Shk { get; set; }
-        [JsonPropertyName("on_hold_date")]
         private DateTime? _onHoldDate;
-        public DateTime? OnHoldDate 
-        { 
-            get => _onHoldDate; 
-            set => value?.ToLocalTime(); 
-        }
+        [JsonPropertyName("on_hold_date")]
+        public DateTime? OnHoldDate { get;  set; }
+
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }
 
@@ -37,9 +29,9 @@ namespace WildberriesDeductions.Models
 
         [JsonPropertyName("sum")]
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
-        public decimal Price 
+        public decimal Price
         {
-            get => _price; 
+            get => _price;
             set => _price = value / 100;
         }
         public string Reason { get; set; } = "Зависший ШК";

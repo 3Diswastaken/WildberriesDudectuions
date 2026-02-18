@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json.Serialization;
-using WildberriesDeductions.Models;
+﻿using System.Text.Json.Serialization;
 
 namespace WildberriesDeductions.Models
 {
@@ -25,7 +19,7 @@ namespace WildberriesDeductions.Models
         public long Shk { get; set; } = 0;
         public DateTime? OnHoldDate
         {
-            get 
+            get
             {
                 if (Logs?.Count > 0 && Logs[^1].FullName.Trim() != "Руслан")
                 {
