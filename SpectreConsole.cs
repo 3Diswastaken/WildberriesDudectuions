@@ -11,6 +11,8 @@ namespace WildberriesDeductions
         {
             Table table = new Table();
             table.AddColumns("Дата удержания", "Вид удержания", "ПВЗ", "Стоимость", "ШК");
+            table.RoundedBorder();
+            table.Width = AnsiConsole.Console.Profile.Width;
             table.Title("Удержания");
             allGoods = allGoods.OrderBy(g => g.OnHoldDate).ToList();
             foreach (var goods in allGoods)
@@ -18,10 +20,11 @@ namespace WildberriesDeductions
                 string price = goods.Price.ToString();
                 price += " руб.";
                 string Shk = goods.Shk.ToString();
-                if (goods.GetType() == typeof(Ticket))
+                if (goods is Ticket)
                 {
                     Shk = goods.TicketId.ToString();
                     price = "-";
+                    table.Columns[4].Header = new Text("ШК | Номер тикета");
                 }
 
                 table.AddRow(

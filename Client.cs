@@ -119,7 +119,6 @@ namespace WildberriesDeductions
             try
             {
                 string resultJson = await service.GetHandingGoods(userConfig, handingGoodsConfig, pickpointName);
-                Debug.WriteLine(resultJson);
                 var resultHandingGoods = ResultsConverter.ConvertHandingGoods(resultJson);
                 Debug.WriteLine($"Запрос handingGoods на {pickpointName} выполнен.");
                 foreach (var item in resultHandingGoods.data.Goods)
