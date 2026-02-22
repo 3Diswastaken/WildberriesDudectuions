@@ -5,46 +5,7 @@ namespace WildberriesDeductions
 {
     public class Client(HttpClient httpClient, AuthService authService, WbRequestService wbService, AllConfigs configs)
     {
-
-        private string _accessToken = string.Empty;
         private string _switchToken = authService.Load();
-        public async Task TryLoginAsync(long phoneNumber)
-        {
-            try
-            {
-                string loginJson = await wbService.Login(configs.loginConfig, phoneNumber);
-                var loginResponse = ResultsConverter.ConvertLoginResponse(loginJson);
-                _accessToken = loginResponse.LoginToken;
-                Debug.WriteLine("Запрос login выполнен");
-            }
-            catch
-            {
-                Console.WriteLine("Ошибка при попытке входа. Проверьте номер телефона и повторите попытку.");
-            }
-        }
-
-        public async Task TryValidateAsync(int code)
-        {
-            try
-            {
-                string validateJson = await wbService.Validate(configs.validateConfig, _accessToken, code);
-                var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
-                _switchToken = validateResponse.Access.Token;
-                Debug.WriteLine("Запрос validate выполнен");
-
-                authService.Save(_switchToken);
-            }
-            catch
-            {
-                Console.WriteLine("Ошибка при валидации кода. Проверьте код и повторите попытку.");
-            }
-        }
-
-        public bool IsTokenValid()
-        {
-            return authService.IsTokenValid();
-        }
-
         public async Task TrySwitchAsync(string pickpointName)
         {
             string switchJson = await wbService.Switch(configs.userConfig, configs.switchConfig, _switchToken, pickpointName);

@@ -12,25 +12,26 @@ namespace WildberriesDeductions
 
             HttpClient httpClient = new HttpClient();
 
-            var storage = new TokenStorage();
-            AuthService authService = new(storage);
-
             WbRequestService wbService = new WbRequestService(httpClient);
+
+            var storage = new TokenStorage();
+
+            AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig);
 
             Client client = new(httpClient, authService, wbService, configs);
 
-
-
-
-
-
             List<GoodsInterface> allGoods = new();
 
-            if (!client.IsTokenValid())
+            if (!authService.IsTokenValid())
             {
                 Console.WriteLine("Токен недействителен или отсутствует. Необходимо выполнить вход.");
 
-                await client.TryLoginAsync(79605174813);
+                if (!await authService.TryLoginAsync(79605174813))
+                {
+                    Console.WriteLine("Ошибка при отправке кода подтверждения. Проверьте номер телефона и попробуйте снова.");
+                    return;
+                }
+
                 string? input = null;
 
                 Console.WriteLine("Введите код подтверждения, отправленный на ваш номер:");
@@ -43,7 +44,11 @@ namespace WildberriesDeductions
                 }
                 int code = int.Parse(input);
 
-                await client.TryValidateAsync(code);
+                if (!await authService.TryValidateAsync(code))
+                {
+                    Console.WriteLine("Ошибка при проверке кода подтверждения. Проверьте код и попробуйте снова.");
+                    return;
+                }
 
             }
 
