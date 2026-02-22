@@ -8,12 +8,21 @@ namespace WildberriesDeductions
     {
         static async Task Main(string[] args)
         {
+            var configs = Factory.LoadConfigs();
+
             HttpClient httpClient = new HttpClient();
 
             var storage = new TokenStorage();
             AuthService authService = new(storage);
 
-            Client client = new(httpClient, authService);
+            WbRequestService wbService = new WbRequestService(httpClient);
+
+            Client client = new(httpClient, authService, wbService, configs);
+
+
+
+
+
 
             List<GoodsInterface> allGoods = new();
 

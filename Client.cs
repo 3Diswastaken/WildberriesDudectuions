@@ -3,19 +3,8 @@ using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
 {
-    public class Client(HttpClient httpClient, AuthService authService)
+    public class Client(HttpClient httpClient, AuthService authService, WbRequestService wbService, AllConfigs configs)
     {
-        // конфиг на каждый тип удержаний со своими url и headers
-        RequestConfig defectGoodsConfig = ConfigLoader.LoadDefectGoods();
-        RequestConfig ticketsConfig = ConfigLoader.LoadTickets(); // использует post и payload
-        RequestConfig replaceGoodsConfig = ConfigLoader.LoadReplaceGoods();
-        RequestConfig handingGoodsConfig = ConfigLoader.LoadHandingGoods();
-        RequestConfig loginConfig = ConfigLoader.LoadLogin();
-        RequestConfig validateConfig = ConfigLoader.LoadValidate();
-        RequestConfig switchConfig = ConfigLoader.LoadSwitch();
-        UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их инфой
-
-        WbRequestService service = new WbRequestService(httpClient);
 
         private string _accessToken = string.Empty;
         private string _switchToken = authService.Load();
@@ -23,7 +12,7 @@ namespace WildberriesDeductions
         {
             try
             {
-                string loginJson = await service.Login(loginConfig, phoneNumber);
+                string loginJson = await wbService.Login(configs.loginConfig, phoneNumber);
                 var loginResponse = ResultsConverter.ConvertLoginResponse(loginJson);
                 _accessToken = loginResponse.LoginToken;
                 Debug.WriteLine("Запрос login выполнен");
@@ -38,7 +27,7 @@ namespace WildberriesDeductions
         {
             try
             {
-                string validateJson = await service.Validate(validateConfig, _accessToken, code);
+                string validateJson = await wbService.Validate(configs.validateConfig, _accessToken, code);
                 var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
                 _switchToken = validateResponse.Access.Token;
                 Debug.WriteLine("Запрос validate выполнен");
@@ -58,11 +47,11 @@ namespace WildberriesDeductions
 
         public async Task TrySwitchAsync(string pickpointName)
         {
-            string switchJson = await service.Switch(userConfig, switchConfig, _switchToken, pickpointName);
+            string switchJson = await wbService.Switch(configs.userConfig, configs.switchConfig, _switchToken, pickpointName);
             var switchResponse = ResultsConverter.ConvertSwitchResponse(switchJson);
             Debug.WriteLine($"Запрос switch на {pickpointName} выполнен.");
             string requestToken = switchResponse.Access.Token;
-            userConfig.Token = requestToken;
+            configs.userConfig.Token = requestToken;
         }
 
         public async Task<List<DefectGood>> TryGetDefectGoodsAsync(string pickpointName)
@@ -70,7 +59,7 @@ namespace WildberriesDeductions
             List<DefectGood> defectGoods = new();
             try
             {
-                string resultJson = await service.GetDefectGoods(userConfig, defectGoodsConfig, pickpointName);
+                string resultJson = await wbService.GetDefectGoods(configs.userConfig, configs.defectGoodsConfig, pickpointName);
                 var resultDefectGoods = ResultsConverter.ConvertDefectGoods(resultJson);
                 Debug.WriteLine($"Запрос defectGoods на {pickpointName} выполнен.");
                 foreach (var item in resultDefectGoods.Goods)
@@ -95,7 +84,7 @@ namespace WildberriesDeductions
             List<ReplaceGood> replaceGoods = new();
             try
             {
-                string resultJson = await service.GetReplaceGoods(userConfig, replaceGoodsConfig, pickpointName);
+                string resultJson = await wbService.GetReplaceGoods(configs.userConfig, configs.replaceGoodsConfig, pickpointName);
                 var resultReplaceGoods = ResultsConverter.ConvertReplaceGoods(resultJson);
                 Debug.WriteLine($"Запрос replaceGoods на {pickpointName} выполнен.");
                 foreach (var item in resultReplaceGoods.Goods)
@@ -118,7 +107,7 @@ namespace WildberriesDeductions
             List<HandingGood> handingGoods = new();
             try
             {
-                string resultJson = await service.GetHandingGoods(userConfig, handingGoodsConfig, pickpointName);
+                string resultJson = await wbService.GetHandingGoods(configs.userConfig, configs.handingGoodsConfig, pickpointName);
                 var resultHandingGoods = ResultsConverter.ConvertHandingGoods(resultJson);
                 Debug.WriteLine($"Запрос handingGoods на {pickpointName} выполнен.");
                 foreach (var item in resultHandingGoods.data.Goods)
@@ -142,7 +131,7 @@ namespace WildberriesDeductions
             List<Ticket> tickets = new();
             try
             {
-                string resultJson = await service.GetTickets(userConfig, ticketsConfig, pickpointName);
+                string resultJson = await wbService.GetTickets(configs.userConfig, configs.ticketsConfig, pickpointName);
                 var resultTickets = ResultsConverter.ConvertTickets(resultJson);
                 Debug.WriteLine($"Запрос tickets на {pickpointName} выполнен.");
                 foreach (var item in resultTickets.Tickets)
