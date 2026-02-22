@@ -10,47 +10,19 @@ namespace WildberriesDeductions
         {
             var configs = Factory.LoadConfigs();
 
-            HttpClient httpClient = new HttpClient();
+            HttpClient httpClient = new();
 
-            WbRequestService wbService = new WbRequestService(httpClient);
+            WbRequestService wbService = new(httpClient);
 
-            var storage = new TokenStorage();
+            TokenStorage storage = new();
 
             AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig);
 
-            Client client = new(httpClient, authService, wbService, configs);
+            Client client = new(authService, wbService, configs);
 
             List<GoodsInterface> allGoods = new();
 
-            if (!authService.IsTokenValid())
-            {
-                Console.WriteLine("Токен недействителен или отсутствует. Необходимо выполнить вход.");
-
-                if (!await authService.TryLoginAsync(79605174813))
-                {
-                    Console.WriteLine("Ошибка при отправке кода подтверждения. Проверьте номер телефона и попробуйте снова.");
-                    return;
-                }
-
-                string? input = null;
-
-                Console.WriteLine("Введите код подтверждения, отправленный на ваш номер:");
-                input = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(input))
-                {
-                    Console.WriteLine("Ошибка: код подтверждения не может быть пустым.");
-                    return;
-                }
-                int code = int.Parse(input);
-
-                if (!await authService.TryValidateAsync(code))
-                {
-                    Console.WriteLine("Ошибка при проверке кода подтверждения. Проверьте код и попробуйте снова.");
-                    return;
-                }
-
-            }
+            await SpectreConsole.AskToLoginAndValidate(authService);
 
             List<string> pickpoints = new() { "p105", "p10" };
             await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>

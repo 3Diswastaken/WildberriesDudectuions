@@ -6,13 +6,16 @@ namespace WildberriesDeductions
 {
     public class AuthService(TokenStorage tokenStorage, WbRequestService wbService, RequestConfig loginConfig, RequestConfig validateConfig)
     {
-        private string _switchToken = tokenStorage.Load();
-        private string _accessToken = string.Empty;
+        private string _tokenForSwitch = tokenStorage.Load();
+        private string _tokenForValidate = string.Empty;
 
         public bool IsTokenValid()
         {
+            if (_tokenForSwitch == string.Empty)
+                return false;
+
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(_switchToken);
+            var jwtToken = handler.ReadJwtToken(_tokenForSwitch);
 
             // Достаем дату истечения
             DateTime expiration = jwtToken.ValidTo.ToLocalTime();
@@ -39,7 +42,7 @@ namespace WildberriesDeductions
             {
                 string loginJson = await wbService.Login(loginConfig, phoneNumber);
                 var loginResponse = ResultsConverter.ConvertLoginResponse(loginJson);
-                _accessToken = loginResponse.LoginToken;
+                _tokenForValidate = loginResponse.LoginToken;
                 Debug.WriteLine("Запрос login выполнен");
                 return true;
             }
@@ -54,12 +57,12 @@ namespace WildberriesDeductions
         {
             try
             {
-                string validateJson = await wbService.Validate(validateConfig, _accessToken, code);
+                string validateJson = await wbService.Validate(validateConfig, _tokenForValidate, code);
                 var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
-                _switchToken = validateResponse.Access.Token;
+                _tokenForSwitch = validateResponse.Access.Token;
                 Debug.WriteLine("Запрос validate выполнен");
 
-                Save(_switchToken);
+                Save(_tokenForSwitch);
                 return true;
             }
             catch

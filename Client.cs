@@ -3,12 +3,13 @@ using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
 {
-    public class Client(HttpClient httpClient, AuthService authService, WbRequestService wbService, AllConfigs configs)
+    public class Client(AuthService authService, WbRequestService wbService, AllConfigs configs)
     {
-        private string _switchToken = authService.Load();
         public async Task TrySwitchAsync(string pickpointName)
         {
-            string switchJson = await wbService.Switch(configs.userConfig, configs.switchConfig, _switchToken, pickpointName);
+            string _tokenForSwitch = authService.Load();
+
+            string switchJson = await wbService.Switch(configs.userConfig, configs.switchConfig, _tokenForSwitch, pickpointName);
             var switchResponse = ResultsConverter.ConvertSwitchResponse(switchJson);
             Debug.WriteLine($"Запрос switch на {pickpointName} выполнен.");
             string requestToken = switchResponse.Access.Token;

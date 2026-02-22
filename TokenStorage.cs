@@ -26,6 +26,7 @@
         {
             if (!File.Exists(_filePath))
             {
+                Save(string.Empty);
                 return string.Empty;
             }
             return File.ReadAllText(_filePath);
