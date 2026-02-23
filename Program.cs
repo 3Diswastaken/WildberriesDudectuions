@@ -22,7 +22,14 @@ namespace WildberriesDeductions
 
             List<GoodsInterface> allGoods = new();
 
-            await SpectreConsole.AskToLoginAndValidate(authService);
+            if (!authService.IsTokenValid())
+            {
+                long phone = SpectreConsole.AskForPhone();
+                await authService.TryLoginAsync(phone);
+
+                int code = SpectreConsole.AskForCode();
+                await authService.TryValidateAsync(code);
+            }
 
             List<string> pickpoints = new() { "p105", "p10" };
             await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
