@@ -1,5 +1,6 @@
 {
 	"Url": "https://r-point.wb.ru/api/v1/login",
+	"Method": "POST",
 	"Headers": 
 	{
 		"Accept": "application/json, text/plain, */*",

@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using System.Text.Json;
 using WildberriesDeductions.Models;
 
@@ -47,10 +49,19 @@ namespace WildberriesDeductions
             url = url.Replace("{dateFrom}", Uri.EscapeDataString(DateTime.UtcNow.AddDays(-30).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")));
             return url;
         }
-        // низкоуревневый метод отправки запросов
-        private async Task<string> SendRequest(string url, HttpMethod method, object? payload, Dictionary<string, string>? headers)
-        {
+
+        // низкоуревневый генерик метод отправки запросов
+        private async Task<T> SendRequest<T> (string url, string httpMethod, object? payload, Dictionary<string, string>? headers)
+        { 
+            var method = httpMethod?.ToUpper() switch
+            {
+                "GET" => HttpMethod.Get,
+                "POST" => HttpMethod.Post,
+                _ => HttpMethod.Get // Значение по умолчанию
+            };
+
             var request = new HttpRequestMessage(method, url);
+
             if (method == HttpMethod.Post && payload != null)
             {
                 request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
@@ -61,50 +72,30 @@ namespace WildberriesDeductions
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
         }
-        // подмены
-        public async Task<string> GetReplaceGoods(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+
+        // получение удержаний или тикетов
+        public async Task<T> GetGoods<T>(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
         {
             string url = BuildUrl(userConfig, requestConfig, pickpointName);
             var withRuntimeHeaders = InitializeHeaders(userConfig, requestConfig, pickpointName);
 
-            return await SendRequest(url, HttpMethod.Get, null, withRuntimeHeaders.Headers);
-        }
-        // браки
-        public async Task<string> GetDefectGoods(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
-        {
-            string url = BuildUrl(userConfig, requestConfig, pickpointName);
-            var withRuntimeHeaders = InitializeHeaders(userConfig, requestConfig, pickpointName);
-
-            return await SendRequest(url, HttpMethod.Get, null, withRuntimeHeaders.Headers);
-        }
-        // тикеты
-        public async Task<string> GetTickets(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
-        {
-            string url = BuildUrl(userConfig, requestConfig, pickpointName);
-            var withRuntimeHeaders = InitializeHeaders(userConfig, requestConfig, pickpointName);
-
-            return await SendRequest(url, HttpMethod.Post, requestConfig.Payload, withRuntimeHeaders.Headers);
+            return await SendRequest<T>(url, requestConfig.Method, requestConfig.Payload, withRuntimeHeaders.Headers);
         }
 
-        public async Task<string> GetHandingGoods(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
-        {
-            string url = BuildUrl(userConfig, requestConfig, pickpointName);
-            var withRuntimeHeaders = InitializeHeaders(userConfig, requestConfig, pickpointName);
-            return await SendRequest(url, HttpMethod.Get, null, withRuntimeHeaders.Headers);
-        }
         // получение 2fa кода
-        public async Task<string> Login(RequestConfig requestConfig, long phoneNumber)
+        public async Task<LoginRoot> Login(RequestConfig requestConfig, long phoneNumber)
         {
             var payload = new Dictionary<string, object>(requestConfig.Payload)
             {
                 ["phone"] = phoneNumber
             };
-            return await SendRequest(requestConfig.Url, HttpMethod.Post, payload, requestConfig.Headers);
+            return await SendRequest<LoginRoot>(requestConfig.Url, requestConfig.Method, payload, requestConfig.Headers);
         }
+
         // валидация 2fa кода
-        public async Task<string> Validate(RequestConfig requestConfig, string token, int code)
+        public async Task<ValidateRoot> Validate(RequestConfig requestConfig, string token, int code)
         {
             var payload = new Dictionary<string, object>(requestConfig.Payload)
             {
@@ -112,11 +103,11 @@ namespace WildberriesDeductions
                 ["code"] = code.ToString()
             };
 
-            return await SendRequest(requestConfig.Url, HttpMethod.Post, payload, requestConfig.Headers);
+            return await SendRequest<ValidateRoot>(requestConfig.Url, requestConfig.Method, payload, requestConfig.Headers);
         }
 
         // получение нового токена при смене пвз
-        public async Task<string> Switch(UserConfig userConfig, RequestConfig requestConfig, string token, string pickpointName)
+        public async Task<SwitchRoot> Switch(UserConfig userConfig, RequestConfig requestConfig, string token, string pickpointName)
         {
             string url = BuildUrl(userConfig, requestConfig, pickpointName);
 
@@ -125,7 +116,7 @@ namespace WildberriesDeductions
                 ["X-Token"] = token
             };
 
-            return await SendRequest(url, HttpMethod.Get, null, headers);
+            return await SendRequest<SwitchRoot>(url, requestConfig.Method, null, headers);
         }
     }
 }

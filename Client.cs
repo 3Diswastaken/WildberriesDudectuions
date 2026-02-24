@@ -9,10 +9,9 @@ namespace WildberriesDeductions
         {
             string _tokenForSwitch = authService.Load();
 
-            string switchJson = await wbService.Switch(configs.userConfig, configs.switchConfig, _tokenForSwitch, pickpointName);
-            var switchResponse = ResultsConverter.ConvertSwitchResponse(switchJson);
+            var result = await wbService.Switch(configs.userConfig, configs.switchConfig, _tokenForSwitch, pickpointName);
             Debug.WriteLine($"Запрос switch на {pickpointName} выполнен.");
-            string requestToken = switchResponse.Access.Token;
+            string requestToken = result.Access.Token;
             configs.userConfig.Token = requestToken;
         }
 
@@ -21,10 +20,9 @@ namespace WildberriesDeductions
             List<DefectGood> defectGoods = new();
             try
             {
-                string resultJson = await wbService.GetDefectGoods(configs.userConfig, configs.defectGoodsConfig, pickpointName);
-                var resultDefectGoods = ResultsConverter.ConvertDefectGoods(resultJson);
+                var result = await wbService.GetGoods<DefectGoodsRoot>(configs.userConfig, configs.defectGoodsConfig, pickpointName);
                 Debug.WriteLine($"Запрос defectGoods на {pickpointName} выполнен.");
-                foreach (var item in resultDefectGoods.Goods)
+                foreach (var item in result.Goods)
                 {
                     if (item.TicketId == 0 && item.BalanceStatus == "to_hold")
                     {
@@ -41,15 +39,15 @@ namespace WildberriesDeductions
             return defectGoods;
         }
 
+
         public async Task<List<ReplaceGood>> TryGetReplaceGoodsAsync(string pickpointName)
         {
             List<ReplaceGood> replaceGoods = new();
             try
             {
-                string resultJson = await wbService.GetReplaceGoods(configs.userConfig, configs.replaceGoodsConfig, pickpointName);
-                var resultReplaceGoods = ResultsConverter.ConvertReplaceGoods(resultJson);
+                var result = await wbService.GetGoods<ReplaceGoodsRoot>(configs.userConfig, configs.replaceGoodsConfig, pickpointName);
                 Debug.WriteLine($"Запрос replaceGoods на {pickpointName} выполнен.");
-                foreach (var item in resultReplaceGoods.Goods)
+                foreach (var item in result.Goods)
                 {
                     if (item.TicketId == 0)
                     {
@@ -69,10 +67,9 @@ namespace WildberriesDeductions
             List<HandingGood> handingGoods = new();
             try
             {
-                string resultJson = await wbService.GetHandingGoods(configs.userConfig, configs.handingGoodsConfig, pickpointName);
-                var resultHandingGoods = ResultsConverter.ConvertHandingGoods(resultJson);
+                var result = await wbService.GetGoods<HandingGoodsRoot>(configs.userConfig, configs.handingGoodsConfig, pickpointName);
                 Debug.WriteLine($"Запрос handingGoods на {pickpointName} выполнен.");
-                foreach (var item in resultHandingGoods.data.Goods)
+                foreach (var item in result.data.Goods)
                 {
                     if (item.Type == "expired" && item.TicketId == 0)
                     {
@@ -93,10 +90,9 @@ namespace WildberriesDeductions
             List<Ticket> tickets = new();
             try
             {
-                string resultJson = await wbService.GetTickets(configs.userConfig, configs.ticketsConfig, pickpointName);
-                var resultTickets = ResultsConverter.ConvertTickets(resultJson);
+                var result = await wbService.GetGoods<TicketsRoot>(configs.userConfig, configs.ticketsConfig, pickpointName);
                 Debug.WriteLine($"Запрос tickets на {pickpointName} выполнен.");
-                foreach (var item in resultTickets.Tickets)
+                foreach (var item in result.Tickets)
                 {
                     if (item.State != 3 && item.TicketId != 0 && item.OnHoldDate != null)
                     {
@@ -111,5 +107,7 @@ namespace WildberriesDeductions
             }
             return tickets;
         }
+
+
     }
 }

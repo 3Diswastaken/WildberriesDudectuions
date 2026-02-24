@@ -40,9 +40,8 @@ namespace WildberriesDeductions
         {
             try
             {
-                string loginJson = await wbService.Login(loginConfig, phoneNumber);
-                var loginResponse = ResultsConverter.ConvertLoginResponse(loginJson);
-                _tokenForValidate = loginResponse.LoginToken;
+                var result = await wbService.Login(loginConfig, phoneNumber);
+                _tokenForValidate = result.LoginToken;
                 Debug.WriteLine("Запрос login выполнен");
                 return true;
             }
@@ -57,9 +56,8 @@ namespace WildberriesDeductions
         {
             try
             {
-                string validateJson = await wbService.Validate(validateConfig, _tokenForValidate, code);
-                var validateResponse = ResultsConverter.ConvertValidateResponse(validateJson);
-                _tokenForSwitch = validateResponse.Access.Token;
+                var result = await wbService.Validate(validateConfig, _tokenForValidate, code);
+                _tokenForSwitch = result.Access.Token;
                 Debug.WriteLine("Запрос validate выполнен");
 
                 Save(_tokenForSwitch);

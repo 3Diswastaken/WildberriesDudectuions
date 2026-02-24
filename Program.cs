@@ -32,6 +32,7 @@ namespace WildberriesDeductions
             }
 
             List<string> pickpoints = new() { "p105", "p10" };
+
             await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
                 {
                     foreach (var pickpoint in pickpoints)

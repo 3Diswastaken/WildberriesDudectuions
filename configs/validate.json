@@ -1,5 +1,6 @@
 {
 	"Url": "https://r-point.wb.ru/api/v1/validate",
+	"Method": "POST",
 	"Headers": 
 	{
 		"Accept": "application/json, text/plain, */*",
