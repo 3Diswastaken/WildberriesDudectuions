@@ -15,6 +15,16 @@ namespace WildberriesDeductions
             configs.userConfig.Token = requestToken;
         }
 
+        public async Task<List<Pickpoint>> TryGetPickpointsListAsync()
+        {
+            string _token = authService.Load();
+
+            var result = await wbService.Pickpoints(configs.pickpointsListConfig, _token);
+            Debug.WriteLine($"Запрос pickpoints выполенен");
+
+            return result.Pickpoints;
+        }
+
         public async Task<List<DefectGood>> TryGetDefectGoodsAsync(string pickpointName)
         {
             List<DefectGood> defectGoods = new();

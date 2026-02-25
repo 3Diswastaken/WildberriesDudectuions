@@ -16,7 +16,8 @@ namespace WildberriesDeductions
             RequestConfig ticketsConfig,
             RequestConfig loginConfig,
             RequestConfig validateConfig,
-            RequestConfig switchConfig
+            RequestConfig switchConfig,
+            RequestConfig pickpointsListConfig
         );
     public static class Factory
     {
@@ -30,6 +31,7 @@ namespace WildberriesDeductions
             RequestConfig loginConfig = ConfigLoader.LoadLogin();
             RequestConfig validateConfig = ConfigLoader.LoadValidate();
             RequestConfig switchConfig = ConfigLoader.LoadSwitch();
+            RequestConfig pickpointsListConfig = ConfigLoader.LoadPickpoints();
             UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их инфой
 
             return new AllConfigs(
@@ -40,7 +42,8 @@ namespace WildberriesDeductions
                 ticketsConfig,
                 loginConfig,
                 validateConfig,
-                switchConfig
+                switchConfig,
+                pickpointsListConfig
             );
         }
     }

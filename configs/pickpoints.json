@@ -1,0 +1,9 @@
+{
+	"Url": "https://core-point.wb.ru/pickpoints/v1/list",
+	"Headers": 
+	{
+		"Accept": "application/json, text/plain, */*",
+		"Content-Type": "application/json",
+		"X-Token": ""
+	}
+}

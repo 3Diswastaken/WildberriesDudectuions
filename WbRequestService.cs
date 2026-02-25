@@ -106,6 +106,18 @@ namespace WildberriesDeductions
             return await SendRequest<ValidateRoot>(requestConfig.Url, requestConfig.Method, payload, requestConfig.Headers);
         }
 
+        
+        public async Task<PickpointsListRoot> Pickpoints(RequestConfig requestConfig, string token)
+        {
+            string url = requestConfig.Url;
+            var headers = new Dictionary<string, string>(requestConfig.Headers)
+            {
+                ["X-Token"] = token
+            };
+
+            return await SendRequest<PickpointsListRoot>(url, requestConfig.Method, null, headers);
+        }
+
         // получение нового токена при смене пвз
         public async Task<SwitchRoot> Switch(UserConfig userConfig, RequestConfig requestConfig, string token, string pickpointName)
         {

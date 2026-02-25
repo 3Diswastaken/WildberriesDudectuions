@@ -1,0 +1,16 @@
+curl 'https://core-point.wb.ru/pickpoints/v1/list' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7' \
+  -H 'origin: https://pvz-lk.wb.ru' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://pvz-lk.wb.ru/' \
+  -H 'sec-ch-ua: "Microsoft Edge";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-site' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0' \
+  -H 'x-app-type: prod' \
+  -H 'x-app-version: v9.7.353' \
+  -H 'x-token: '
