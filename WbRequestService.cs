@@ -17,31 +17,29 @@ namespace WildberriesDeductions
         }
 
         // заполняем хедеры для конкретного пвз и типа удержаний (зависит от requestConfig)
-        private RequestConfig InitializeHeaders(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        private RequestConfig InitializeHeaders(RequestConfig requestConfig, Pickpoint pickpoint)
         {
             RequestConfig clone = requestConfig.Clone();
 
-            var pickpoint = userConfig.PickpointInfo[pickpointName];
-
-            clone.Headers["X-PickPoint-External-Id"] = pickpoint.ExternalId;
-            clone.Headers["X-PickPoint-Id"] = pickpoint.Id;
-            clone.Headers["X-Token"] = userConfig.Token;
+            clone.Headers["X-PickPoint-External-Id"] = pickpoint.ExternalId.ToString();
+            clone.Headers["X-PickPoint-Id"] = pickpoint.Id.ToString();
+            clone.Headers["X-Token"] = pickpoint.Token;
 
             return clone;
         }
 
         // заполняем плейсхолдеры в url на основе пвз и текущей даты
-        private string BuildUrl(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        private string BuildUrl(RequestConfig requestConfig, Pickpoint pickpoint)
         {
             string url = requestConfig.Url;
 
-            string externalPickpointId = userConfig.PickpointInfo[pickpointName].ExternalId;
+            string externalPickpointId = pickpoint.ExternalId.ToString();
             url = url.Replace("{pickpointId}", externalPickpointId);
 
-            string internalPickpointId = userConfig.PickpointInfo[pickpointName].Id;
+            string internalPickpointId = pickpoint.Id.ToString();
             url = url.Replace("{internalPickpointId}", internalPickpointId);
 
-            string shard = userConfig.PickpointInfo[pickpointName].Shard;
+            string shard = pickpoint.Shard.ToString();
             url = url.Replace("{shard}", shard);
 
             // нужно только для defect-goods
@@ -72,14 +70,16 @@ namespace WildberriesDeductions
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<T>(responseJson);
         }
 
         // получение удержаний или тикетов
-        public async Task<T> GetGoods<T>(UserConfig userConfig, RequestConfig requestConfig, string pickpointName)
+        public async Task<T> GetGoods<T>(RequestConfig requestConfig, Pickpoint pickpoint)
         {
-            string url = BuildUrl(userConfig, requestConfig, pickpointName);
-            var withRuntimeHeaders = InitializeHeaders(userConfig, requestConfig, pickpointName);
+            string url = BuildUrl(requestConfig, pickpoint);
+            var withRuntimeHeaders = InitializeHeaders(requestConfig, pickpoint);
 
             return await SendRequest<T>(url, requestConfig.Method, requestConfig.Payload, withRuntimeHeaders.Headers);
         }
@@ -119,9 +119,9 @@ namespace WildberriesDeductions
         }
 
         // получение нового токена при смене пвз
-        public async Task<SwitchRoot> Switch(UserConfig userConfig, RequestConfig requestConfig, string token, string pickpointName)
+        public async Task<SwitchRoot> Switch(RequestConfig requestConfig, string token, Pickpoint pickpoint)
         {
-            string url = BuildUrl(userConfig, requestConfig, pickpointName);
+            string url = BuildUrl(requestConfig, pickpoint);
 
             var headers = new Dictionary<string, string>(requestConfig.Headers)
             {

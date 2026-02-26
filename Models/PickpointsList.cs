@@ -17,11 +17,12 @@ namespace WildberriesDeductions.Models
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
-        [JsonPropertyName("external-id")]
+        [JsonPropertyName("external_id")]
         public int ExternalId { get; set; }
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
         [JsonPropertyName("shard")]
         public int Shard { get; set; }
+        public string Token { get; set; } = string.Empty;
     }
 }

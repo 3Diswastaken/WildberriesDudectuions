@@ -31,16 +31,27 @@ namespace WildberriesDeductions
                 await authService.TryValidateAsync(code);
             }
 
-            List<string> pickpoints = new() { "p105", "p10" };
+            var pickpoints = await client.TryGetPickpointsListAsync();
+
+            var selectedPickpoints = AnsiConsole.Prompt(
+                new MultiSelectionPrompt<Pickpoint>()
+                    .Title("Выберите ПВЗ для получения данных:")
+                    .NotRequired()
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](нажмите пробел для выбора)[/]")
+                    .InstructionsText("[grey](используйте стрелки для навигации, пробел для выбора, Enter для подтверждения)[/]")
+                    .UseConverter(p => p.Name)
+                    .AddChoices(pickpoints));
+
 
             await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
                 {
-                    foreach (var pickpoint in pickpoints)
+                    foreach (var pickpoint in selectedPickpoints)
                     {
-                        ctx.Status($"Переключение на {pickpoint}...");
+                        ctx.Status($"Переключение на {pickpoint.Name}...");
                         await client.TrySwitchAsync(pickpoint);
 
-                        ctx.Status($"Получение зависших шк для {pickpoint}...");
+                        ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
                         var handingGoods = await client.TryGetHandingGoodsAsync(pickpoint);
                         allGoods.AddRange(handingGoods);
 
@@ -49,15 +60,15 @@ namespace WildberriesDeductions
                             Debug.WriteLine($"Зависший шк: {good.Shk}, дата: {good.OnHoldDate}, пвз: {pickpoint}");
                         }
 
-                        ctx.Status($"Получение брака для {pickpoint}...");
+                        ctx.Status($"Получение брака для {pickpoint.Name}...");
                         var defectGoods = await client.TryGetDefectGoodsAsync(pickpoint);
                         allGoods.AddRange(defectGoods);
 
-                        ctx.Status($"Получение подмен для {pickpoint}...");
+                        ctx.Status($"Получение подмен для {pickpoint.Name}...");
                         var replaceGoods = await client.TryGetReplaceGoodsAsync(pickpoint);
                         allGoods.AddRange(replaceGoods);
 
-                        ctx.Status($"Получение тикетов для {pickpoint}...");
+                        ctx.Status($"Получение тикетов для {pickpoint.Name}...");
                         var tickets = await client.TryGetTicketsAsync(pickpoint);
                         allGoods.AddRange(tickets);
                     }

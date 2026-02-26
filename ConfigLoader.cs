@@ -39,8 +39,6 @@ namespace WildberriesDeductions
             return config;
         }
 
-        public static UserConfig LoadUserConfig() => Load<UserConfig>("user.json");
-
         public static RequestConfig LoadLogin() => LoadRequest("login.json");
         public static RequestConfig LoadValidate() => LoadRequest("validate.json");
         public static RequestConfig LoadDefectGoods() => LoadRequest("defect-goods.json");

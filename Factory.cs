@@ -9,7 +9,6 @@ namespace WildberriesDeductions
 {
     public record AllConfigs
         (
-            UserConfig userConfig,
             RequestConfig defectGoodsConfig,
             RequestConfig handingGoodsConfig,
             RequestConfig replaceGoodsConfig,
@@ -32,10 +31,8 @@ namespace WildberriesDeductions
             RequestConfig validateConfig = ConfigLoader.LoadValidate();
             RequestConfig switchConfig = ConfigLoader.LoadSwitch();
             RequestConfig pickpointsListConfig = ConfigLoader.LoadPickpoints();
-            UserConfig userConfig = ConfigLoader.LoadUserConfig(); // хранит токен и список пвз с их инфой
 
             return new AllConfigs(
-                userConfig,
                 defectGoodsConfig,
                 handingGoodsConfig,
                 replaceGoodsConfig,
