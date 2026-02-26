@@ -49,7 +49,21 @@ namespace WildberriesDeductions
             AnsiConsole.Clear();
             return int.Parse(codeInput);
         }
+        
+        public static List<Pickpoint> SelectPickpoints(List<Pickpoint> allPickpoints)
+        {
+            var selectedPickpoints = AnsiConsole.Prompt(
+                new MultiSelectionPrompt<Pickpoint>()
+                    .Title("Выберите ПВЗ для получения данных:")
+                    .NotRequired()
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](нажмите пробел для выбора)[/]")
+                    .InstructionsText("[grey](используйте стрелки для навигации, пробел для выбора, Enter для подтверждения)[/]")
+                    .UseConverter(pickpoint => pickpoint.Name)
+                    .AddChoices(allPickpoints));
 
+            return selectedPickpoints;
+        }
         public static void PrintDeductionGoods(List<GoodsInterface> allGoods)
         {
             Table table = new Table();

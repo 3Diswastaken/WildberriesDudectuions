@@ -31,18 +31,9 @@ namespace WildberriesDeductions
                 await authService.TryValidateAsync(code);
             }
 
-            var pickpoints = await client.TryGetPickpointsListAsync();
+            var allPickpoints = await client.TryGetPickpointsListAsync();
 
-            var selectedPickpoints = AnsiConsole.Prompt(
-                new MultiSelectionPrompt<Pickpoint>()
-                    .Title("Выберите ПВЗ для получения данных:")
-                    .NotRequired()
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](нажмите пробел для выбора)[/]")
-                    .InstructionsText("[grey](используйте стрелки для навигации, пробел для выбора, Enter для подтверждения)[/]")
-                    .UseConverter(p => p.Name)
-                    .AddChoices(pickpoints));
-
+            var selectedPickpoints = SpectreConsole.SelectPickpoints(allPickpoints);
 
             await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
                 {
