@@ -68,11 +68,29 @@ namespace WildberriesDeductions
             if (headers != null)
                 foreach (var header in headers) request.Headers.TryAddWithoutValidation(header.Key, header.Value);
 
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            string responseJson = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                string responseJson = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<T>(responseJson);
+                return JsonSerializer.Deserialize<T>(responseJson);
+            }
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine($"ошибка сети: ", ex);
+                throw;
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine($"ошибка json ответа от сервера: ", ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"хуйня какая-то: ", ex);
+                throw;
+            }
         }
 
         // получение удержаний или тикетов

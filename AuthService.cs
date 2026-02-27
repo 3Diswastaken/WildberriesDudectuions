@@ -63,9 +63,9 @@ namespace WildberriesDeductions
                 Save(_tokenForSwitch);
                 return true;
             }
-            catch
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("Ошибка при валидации кода. Проверьте код и повторите попытку.");
+                Debug.WriteLine($"Ошибка при валидации кода: {ex}");
                 return false;
             }
         }

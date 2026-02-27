@@ -26,9 +26,16 @@ namespace WildberriesDeductions
             {
                 long phone = SpectreConsole.AskForPhone();
                 await authService.TryLoginAsync(phone);
-
-                int code = SpectreConsole.AskForCode();
-                await authService.TryValidateAsync(code);
+                
+                while (true)
+                {
+                    int code = SpectreConsole.AskForCode();
+                    if (await authService.TryValidateAsync(code))
+                        break;
+                    else 
+                        AnsiConsole.MarkupLine("[red]Неверный код. Попробуйте снова.[/]");
+                }
+                
             }
 
             var allPickpoints = await client.TryGetPickpointsListAsync();
