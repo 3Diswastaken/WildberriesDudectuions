@@ -35,7 +35,6 @@ namespace WildberriesDeductions
                     else 
                         AnsiConsole.MarkupLine("[red]Неверный код. Попробуйте снова.[/]");
                 }
-                
             }
 
             var allPickpoints = await client.TryGetPickpointsListAsync();
@@ -52,11 +51,6 @@ namespace WildberriesDeductions
                         ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
                         var handingGoods = await client.TryGetHandingGoodsAsync(pickpoint);
                         allGoods.AddRange(handingGoods);
-
-                        foreach (var good in handingGoods)
-                        {
-                            Debug.WriteLine($"Зависший шк: {good.Shk}, дата: {good.OnHoldDate}, пвз: {pickpoint}");
-                        }
 
                         ctx.Status($"Получение брака для {pickpoint.Name}...");
                         var defectGoods = await client.TryGetDefectGoodsAsync(pickpoint);

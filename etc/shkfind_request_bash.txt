@@ -1,0 +1,20 @@
+curl 'https://s-point.wb.ru/s13/api/v2/goods/find_by/shk' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7' \
+  -H 'content-type: application/json' \
+  -H 'origin: https://pvz-lk.wb.ru' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://pvz-lk.wb.ru/' \
+  -H 'sec-ch-ua: "Microsoft Edge";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-site' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0' \
+  -H 'x-app-type: prod' \
+  -H 'x-app-version: v9.7.353' \
+  -H 'x-pickpoint-external-id: 157164' \
+  -H 'x-pickpoint-id: 27140' \
+  -H 'x-token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIxMDcyODIzNTM6OWI2ZDc0ZTA0OWI3NTVmZSIsInVpZCI6ODA3OTE5LCJ3dWlkIjoxMDcyODIzNTMsInBpZCI6MjcxNDAsInhwaWQiOjE1NzE2NCwicHR5cGUiOjgsInMiOjEzLCJyIjpbMV0sInBlcm1pc3Npb25zIjpbXSwiYWRtaW4iOmZhbHNlLCJibCI6ZmFsc2UsImFjIjpmYWxzZSwiYWRtaW5fcm9sZXMiOm51bGwsImlzX3JlZnJlc2giOmZhbHNlLCJyZWZyZXNoX2tleSI6IiIsImNvdW50cnkiOiIiLCJhcGlkcyI6WzE0MjUwLDI3MTQwLDkxNTkzLDEwMzI2MV0sImVhcGlkcyI6WzEzNzU2OSwxNTcxNjQsNTAwMzQ1MjcsNTAwNDYwOTVdLCJhbGxvd2VkIjoiR3YrQkFnRUJDMEZzYkc5M1pXUk1hWE4wQWYrQ0FBSC9nQUFBUVg4REFRTC9nQUFCQkFFTFVHbGphM0J2YVc1MFNXUUJCQUFCRGxCcFkydHdiMmx1ZEVWNGRFbGtBUVFBQVFWVGFHRnlaQUVFQUFFRVVtOXNaUUVHQUFBQVFQK0NBQVFCL1FNbXVnSDhCZmRKSGdGYUFRRUFBZjdVQ0FIOUJNdllBUm9CQVFBQi9tOVVBZjBFTXNJQkZBRUJBQUg5QXN1U0Fmd0Y5dTYrQVU0QkFRQT0iLCJ2ZXJzaW9uIjoxLCJkZXZpY2VfdXVpZCI6ImRiNDVhYmJhMGVhZDRmMjBiNmNiN2U5Yzc0NDhhY2Q2IiwiZmlybSI6ZmFsc2UsImV4cCI6MTc3MjQ4MjQxNSwiaWF0IjoxNzcyMzk2MDE1fQ.WsS8LW5uEVeS8dY-RmtbNU6Zt0yBE5Kd8mKycfwOjQQY95nQi6qS6ziRBxtkNq1w04R96--aJ8vS38MV7MlOl8Tk2LeGKX-FOt0b9GPGlKDclnBD3ssuEm67twYPUb0x2S7CUAB9mSeI3Wd8Th0V_mLsXOcyBCkyLRAzlhUEfZcQ0DMPoFKrJ1H9XAiSEDFpdIv0Km9z-vn24HwsVCgcANHivvbsS0OwrdxtpruHg7IHCCdtTWrzHL8mw0qBa0Zivgj3E47dkOCemU7cHkg1Y13wadGw6puBW2X-7eI7gK_Z0OvsDBNj63I6_KUvlaCfc2VsPnKHKfGEeFcGobrhbQ' \
+  --data-raw '{"search_base64":"MzkzNDcyMDA2NTc="}'
