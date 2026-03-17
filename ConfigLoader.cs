@@ -47,5 +47,6 @@ namespace WildberriesDeductions
         public static RequestConfig LoadTickets() => LoadRequest("tickets.json");
         public static RequestConfig LoadSwitch() => LoadRequest("switch.json");
         public static RequestConfig LoadPickpoints() => LoadRequest("pickpoints.json");
+        public static RequestConfig LoadFindByShk() => LoadRequest("find-by-shk.json");
     }
 }

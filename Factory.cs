@@ -16,7 +16,8 @@ namespace WildberriesDeductions
             RequestConfig loginConfig,
             RequestConfig validateConfig,
             RequestConfig switchConfig,
-            RequestConfig pickpointsListConfig
+            RequestConfig pickpointsListConfig,
+            RequestConfig findByShkConfig
         );
     public static class Factory
     {
@@ -31,6 +32,7 @@ namespace WildberriesDeductions
             RequestConfig validateConfig = ConfigLoader.LoadValidate();
             RequestConfig switchConfig = ConfigLoader.LoadSwitch();
             RequestConfig pickpointsListConfig = ConfigLoader.LoadPickpoints();
+            RequestConfig findByShkConfig = ConfigLoader.LoadFindByShk();
 
             return new AllConfigs(
                 defectGoodsConfig,
@@ -40,7 +42,8 @@ namespace WildberriesDeductions
                 loginConfig,
                 validateConfig,
                 switchConfig,
-                pickpointsListConfig
+                pickpointsListConfig,
+                findByShkConfig
             );
         }
     }

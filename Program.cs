@@ -1,5 +1,6 @@
 ﻿using Spectre.Console;
 using System.Diagnostics;
+using System.Text;
 using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
@@ -20,28 +21,32 @@ namespace WildberriesDeductions
 
             Client client = new(authService, wbService, configs);
 
-            List<GoodsInterface> allGoods = new();
+            //List<GoodsInterface> allGoods = new();
+
+            
 
             if (!authService.IsTokenValid())
             {
                 long phone = SpectreConsole.AskForPhone();
                 await authService.TryLoginAsync(phone);
-                
+
                 while (true)
                 {
                     int code = SpectreConsole.AskForCode();
                     if (await authService.TryValidateAsync(code))
                         break;
-                    else 
+                    else
                         AnsiConsole.MarkupLine("[red]Неверный код. Попробуйте снова.[/]");
                 }
             }
 
-            var allPickpoints = await client.TryGetPickpointsListAsync();
+            while (true)
+            {
+                var allPickpoints = await client.TryGetPickpointsListAsync();
+                var selectedPickpoints = SpectreConsole.SelectPickpoints(allPickpoints);
 
-            var selectedPickpoints = SpectreConsole.SelectPickpoints(allPickpoints);
-
-            await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
+                List<DeductionGood> deductionGoods = new();
+                await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
                 {
                     foreach (var pickpoint in selectedPickpoints)
                     {
@@ -50,22 +55,35 @@ namespace WildberriesDeductions
 
                         ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
                         var handingGoods = await client.TryGetHandingGoodsAsync(pickpoint);
-                        allGoods.AddRange(handingGoods);
+                        deductionGoods.AddRange(handingGoods.Select(g => g.ToDomain()));
 
                         ctx.Status($"Получение брака для {pickpoint.Name}...");
                         var defectGoods = await client.TryGetDefectGoodsAsync(pickpoint);
-                        allGoods.AddRange(defectGoods);
+                        deductionGoods.AddRange(defectGoods.Select(g => g.ToDomain()));
 
                         ctx.Status($"Получение подмен для {pickpoint.Name}...");
                         var replaceGoods = await client.TryGetReplaceGoodsAsync(pickpoint);
-                        allGoods.AddRange(replaceGoods);
+                        deductionGoods.AddRange(replaceGoods.Select(g => g.ToDomain()));
 
-                        ctx.Status($"Получение тикетов для {pickpoint.Name}...");
-                        var tickets = await client.TryGetTicketsAsync(pickpoint);
-                        allGoods.AddRange(tickets);
+                        /* ctx.Status($"Получение тикетов для {pickpoint.Name}...");
+                         var tickets = await client.TryGetTicketsAsync(pickpoint);
+                         allGoods.AddRange(tickets);*/
                     }
                 });
-            SpectreConsole.PrintDeductionGoods(allGoods);
+                //SpectreConsole.PrintDeductionGoods(allGoods);
+
+                while (true)
+                {
+                    var deduction = SpectreConsole.SelectDeduction(deductionGoods);
+                    if (deduction == null)
+                    {
+                        break;
+                    } else
+                    {
+                        Debug.WriteLine($"Selected deduction: SHK={deduction.Shk}, Reason={deduction.Reason}, Pickpoint={deduction.Pickpoint}");
+                    }
+                }
+            }
 
             Console.ReadLine();
         }

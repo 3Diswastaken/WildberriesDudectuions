@@ -4,9 +4,7 @@
 	"Headers": 
 	{
 		"Accept": "application/json, text/plain, */*",
-		"Content-Type": "application/json",
-		"X-App-Version": "v9.7.345"
-
+		"Content-Type": "application/json"
 	},
 	"Payload":
 	{

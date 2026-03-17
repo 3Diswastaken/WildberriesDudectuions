@@ -49,8 +49,8 @@ namespace WildberriesDeductions
         }
 
         // низкоуревневый генерик метод отправки запросов
-        private async Task<T> SendRequest<T> (string url, string httpMethod, object? payload, Dictionary<string, string>? headers)
-        { 
+        private async Task<T> SendRequest<T>(string url, string httpMethod, object? payload, Dictionary<string, string>? headers)
+        {
             var method = httpMethod?.ToUpper() switch
             {
                 "GET" => HttpMethod.Get,
@@ -72,13 +72,20 @@ namespace WildberriesDeductions
             {
                 var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
+
+                if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    string errorJson = await response.Content.ReadAsStringAsync();
+                    Debug.WriteLine(errorJson);
+                }
+
                 string responseJson = await response.Content.ReadAsStringAsync();
 
                 return JsonSerializer.Deserialize<T>(responseJson);
             }
             catch (HttpRequestException ex)
             {
-                Debug.WriteLine($"ошибка сети: ", ex);
+                Debug.WriteLine(ex.ToString());
                 throw;
             }
             catch (JsonException ex)
@@ -124,7 +131,7 @@ namespace WildberriesDeductions
             return await SendRequest<ValidateRoot>(requestConfig.Url, requestConfig.Method, payload, requestConfig.Headers);
         }
 
-        
+
         public async Task<PickpointsListRoot> Pickpoints(RequestConfig requestConfig, string token)
         {
             string url = requestConfig.Url;
@@ -147,6 +154,18 @@ namespace WildberriesDeductions
             };
 
             return await SendRequest<SwitchRoot>(url, requestConfig.Method, null, headers);
+        }
+
+        public async Task<WbGoodSearchResponse> FindByShk(RequestConfig requestConfig, Pickpoint pickpoint, string shk)
+        {
+            string url = BuildUrl(requestConfig, pickpoint);
+            var withRuntimeHeaders = InitializeHeaders(requestConfig, pickpoint);
+            var payload = new Dictionary<string, object>(requestConfig.Payload)
+            {
+                ["search_base64"] = shk
+            };
+
+            return await SendRequest<WbGoodSearchResponse>(url, requestConfig.Method, payload, withRuntimeHeaders.Headers);
         }
     }
 }

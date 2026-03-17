@@ -1,0 +1,16 @@
+{
+	"Url": "https://s-point.wb.ru/s{shard}/api/v2/goods/find_by/shk",
+	"Headers":
+	{
+		"Accept": "application/json, text/plain, */*",
+		"Content-Type": "application/json",
+		"X-PickPoint-External-Id": "0",
+		"X-PickPoint-Id": "0",
+		"X-Token": ""
+	},
+	"Method": "POST",
+	"Payload":
+	{
+		"search_base64":""
+	}
+}

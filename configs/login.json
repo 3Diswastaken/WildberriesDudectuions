@@ -5,8 +5,7 @@
 	{
 		"Accept": "application/json, text/plain, */*",
 		"Content-Length": "87",
-		"Content-Type": "application/json",
-		"X-App-Version": "v9.7.345"
+		"Content-Type": "application/json"
 	},
 	"Payload":
 	{

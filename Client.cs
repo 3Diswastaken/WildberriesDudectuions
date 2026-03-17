@@ -95,14 +95,14 @@ namespace WildberriesDeductions
             return handingGoods;
         }
 
-        public async Task<List<Ticket>> TryGetTicketsAsync(Pickpoint pickpoint)
+        /*public async Task<List<Ticket>> TryGetTicketsAsync(Pickpoint pickpoint)
         {
             List<Ticket> tickets = new();
             try
             {
-                var result = await wbService.GetGoods<TicketsRoot>(configs.ticketsConfig, pickpoint);
+                var result = await wbService.GetGoods<WbTicketsResponse>(configs.ticketsConfig, pickpoint);
                 Debug.WriteLine($"Запрос tickets на {pickpoint.Name} выполнен.");
-                foreach (var item in result.Tickets)
+                foreach (var item in result.Data)
                 {
                     if (item.State != 3 && item.TicketId != 0 && item.OnHoldDate != null)
                     {
@@ -116,8 +116,29 @@ namespace WildberriesDeductions
                 Console.WriteLine($"Ошибка при получении данных о тикетах на пвз {pickpoint.Name}.");
             }
             return tickets;
+        }*/
+
+
+        public async Task<List<WbGoodSearchEntry>> TryFindByShkAsync(string base64shk, Pickpoint pickpoint)
+        {
+            List<WbGoodSearchEntry> Good = new();
+            try
+            {
+                var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, base64shk);
+                Debug.WriteLine($"Запрос поиска шк на {pickpoint.Name} выполнен.");
+                if (result.Data != null)
+                {
+                    foreach (var item in result.Data)
+                    {
+                        Good.Add(item);
+                    }
+                }
+            }
+            catch
+            {
+                Console.WriteLine($"Ошибка при поиске по ШК на пвз {pickpoint.Name}.");
+            }
+            return Good;
         }
-
-
     }
 }

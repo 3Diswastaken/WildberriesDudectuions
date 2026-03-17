@@ -49,13 +49,12 @@ namespace WildberriesDeductions
             AnsiConsole.Clear();
             return int.Parse(codeInput);
         }
-        
+
         public static List<Pickpoint> SelectPickpoints(List<Pickpoint> allPickpoints)
         {
             var selectedPickpoints = AnsiConsole.Prompt(
                 new MultiSelectionPrompt<Pickpoint>()
                     .Title("Выберите ПВЗ для получения данных:")
-                    .NotRequired()
                     .PageSize(10)
                     .MoreChoicesText("[grey](нажмите пробел для выбора)[/]")
                     .InstructionsText("[grey](используйте стрелки для навигации, пробел для выбора, Enter для подтверждения)[/]")
@@ -64,6 +63,38 @@ namespace WildberriesDeductions
 
             return selectedPickpoints;
         }
+
+        public static DeductionGood? SelectDeduction(List<DeductionGood> deductions)
+        {
+            var prompt = new SelectionPrompt<object>()
+                .Title("[yellow]Выберите товар для деталей или вернитесь назад:[/]")
+                .PageSize(15)
+                .MoreChoicesText("[grey](Листайте вниз, чтобы увидеть все товары)[/]")
+                .AddChoices("<- НАЗАД (К выбору ПВЗ)")
+                .AddChoices(deductions.OrderBy(g => g.OnHoldDate).Cast<object>());
+
+            prompt.UseConverter(item =>
+            {
+                if (item is string str)
+                    return $"[red]{str}[/]";
+                if (item is DeductionGood d)
+                {
+                    string date = d.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "Нет данных";
+                    string pp = d.Pickpoint.Length > 25 ? d.Pickpoint[..22] + "..." : d.Pickpoint;
+                    return $"| {date} | {d.Reason, -12} | {pp, -25} | {d.DeductionPrice, -6} руб. | {d.Shk, -15} |";
+                }
+
+                return item.ToString() ?? "Неизвестно";
+            });
+
+            var selected = AnsiConsole.Prompt(prompt);
+            if (selected is string)
+                return null; 
+
+            return selected as DeductionGood;
+        }
+
+
         public static void PrintDeductionGoods(List<GoodsInterface> allGoods)
         {
             Table table = new Table();
