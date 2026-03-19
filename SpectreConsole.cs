@@ -94,6 +94,25 @@ namespace WildberriesDeductions
             return selected as DeductionGood;
         }
 
+        /*public static void PrintDeductionDetails(DeductionGood deduction)
+        {
+            var table = new Table();
+            table.AddColumns("Дата удержания", "Вид удержания", "ПВЗ", "Стоимость", "ШК");
+            table.RoundedBorder();
+            table.Width = AnsiConsole.Console.Profile.Width;
+            table.Title("Детали удержания");
+            string price = deduction.DeductionPrice.ToString() + " руб.";
+            string Shk = deduction.Shk.ToString();
+            table.AddRow(
+                deduction.OnHoldDate?.ToLocalTime().ToString(),
+                deduction.Reason,
+                deduction.Pickpoint,
+                price,
+                Shk
+            );
+            AnsiConsole.Write(table);
+        }*/
+
 
         public static void PrintDeductionGoods(List<GoodsInterface> allGoods)
         {

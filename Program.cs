@@ -80,7 +80,14 @@ namespace WildberriesDeductions
                         break;
                     } else
                     {
-                        Debug.WriteLine($"Selected deduction: SHK={deduction.Shk}, Reason={deduction.Reason}, Pickpoint={deduction.Pickpoint}");
+                        var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.Pickpoint);
+
+                        await client.TrySwitchAsync(deductionPickpoint);
+                        var rawDeductionDetails = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
+                        var deductionDetails = rawDeductionDetails.ToEnrich(deduction);
+
+
+                        Debug.WriteLine($"Размер: {deductionDetails.Details.Size}");
                     }
                 }
             }

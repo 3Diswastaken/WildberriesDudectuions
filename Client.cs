@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using WildberriesDeductions.Models;
 
 namespace WildberriesDeductions
@@ -119,12 +120,14 @@ namespace WildberriesDeductions
         }*/
 
 
-        public async Task<List<WbGoodSearchEntry>> TryFindByShkAsync(string base64shk, Pickpoint pickpoint)
+        public async Task<WbGoodSearchEntry> TryFindByShkAsync(string shk, Pickpoint pickpoint)
         {
             List<WbGoodSearchEntry> Good = new();
+            byte[] textBytes = Encoding.UTF8.GetBytes(shk);
+            string shk64base = Convert.ToBase64String(textBytes);
             try
             {
-                var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, base64shk);
+                var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, shk);
                 Debug.WriteLine($"Запрос поиска шк на {pickpoint.Name} выполнен.");
                 if (result.Data != null)
                 {
@@ -138,7 +141,7 @@ namespace WildberriesDeductions
             {
                 Console.WriteLine($"Ошибка при поиске по ШК на пвз {pickpoint.Name}.");
             }
-            return Good;
+            return Good.FirstOrDefault();
         }
     }
 }
