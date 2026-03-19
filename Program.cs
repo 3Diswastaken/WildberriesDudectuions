@@ -23,7 +23,7 @@ namespace WildberriesDeductions
 
             //List<GoodsInterface> allGoods = new();
 
-            
+            //test
 
             if (!authService.IsTokenValid())
             {
