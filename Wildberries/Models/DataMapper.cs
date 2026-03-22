@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WildberriesDeductions.Models
+﻿namespace WildberriesDeductions.Wildberries.Models
 {
     public static class DataMapper
     {
@@ -65,7 +59,7 @@ namespace WildberriesDeductions.Models
             };
         }
 
-        public static DeductionGood ToEnrich(this WbGoodSearchEntry raw, DeductionGood deduction)
+        public static DeductionGood ToEnrich(this DeductionGood deduction, WbGoodSearchEntry raw)
         {
             if (raw == null || deduction == null) return deduction;
 

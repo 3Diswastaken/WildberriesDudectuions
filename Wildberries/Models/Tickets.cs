@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WildberriesDeductions.Models
+namespace WildberriesDeductions.Wildberries.Models
 {
     public class WbTicketsResponse
     {

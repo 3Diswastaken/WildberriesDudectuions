@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
-using WildberriesDeductions.Models;
+using WildberriesDeductions.Wildberries.Models;
 
-
-namespace WildberriesDeductions
+namespace WildberriesDeductions.Wildberries
 {
     public class WbRequestService
     {

@@ -1,14 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WildberriesDeductions.Models
+namespace WildberriesDeductions.Wildberries.Models
 {
-    public class SwitchRoot
+    public class ValidateRoot
     {
         [JsonPropertyName("access")]
-        public AccessSwitchToken Access { get; set; } = new();
+        public AccessToken Access { get; set; } = new AccessToken();
     }
 
-    public class AccessSwitchToken
+    public class AccessToken
     {
         [JsonPropertyName("token")]
         public string Token { get; set; } = "";

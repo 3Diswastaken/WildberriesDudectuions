@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WildberriesDeductions.Models;
+using WildberriesDeductions.Wildberries.Models;
 
-namespace WildberriesDeductions
+namespace WildberriesDeductions.Wildberries
 {
     public record AllConfigs
         (

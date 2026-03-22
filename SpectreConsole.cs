@@ -1,9 +1,5 @@
-﻿using Microsoft.Win32.SafeHandles;
-using Spectre.Console;
-using System.Diagnostics;
-using System.Globalization;
-using System.Numerics;
-using WildberriesDeductions.Models;
+﻿using Spectre.Console;
+using WildberriesDeductions.Wildberries.Models;
 
 namespace WildberriesDeductions
 {
@@ -103,13 +99,14 @@ namespace WildberriesDeductions
 
             var table = new Table();
             table.Title("Детали удержания");
-            table.AddColumns("Время отметки о браке", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК");
+            table.AddColumns("Время отметки о браке", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК", "Ячейка");
             table.Width = AnsiConsole.Console.Profile.Width;
 
             string price = deduction.DeductionPrice.ToString() + " руб.";
             string shk = deduction.Shk.ToString();
             string date = deduction.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss");
             string defectMarkDate = deduction.Details.DefectMark.FirstOrDefault()?.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "-";
+            string cell = deduction.Details.Cell.ToString();
 
 
             table.AddRow(
@@ -117,7 +114,8 @@ namespace WildberriesDeductions
                 date,
                 deduction.Reason,
                 price,
-                shk
+                shk,
+                cell
             );
 
             var statusHistoryTable = new Table();

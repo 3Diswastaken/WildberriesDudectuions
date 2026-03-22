@@ -1,4 +1,4 @@
-﻿namespace WildberriesDeductions
+﻿namespace WildberriesDeductions.Wildberries
 {
     public class TokenStorage
     {

@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using WildberriesDeductions.Models;
+using WildberriesDeductions.Wildberries.Models;
 
-namespace WildberriesDeductions
+namespace WildberriesDeductions.Wildberries
 {
     public class AuthService(TokenStorage tokenStorage, WbRequestService wbService, RequestConfig loginConfig, RequestConfig validateConfig)
     {

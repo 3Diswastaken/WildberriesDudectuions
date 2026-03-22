@@ -1,7 +1,6 @@
 ﻿using Spectre.Console;
-using System.Diagnostics;
-using System.Text;
-using WildberriesDeductions.Models;
+using WildberriesDeductions.Wildberries;
+using WildberriesDeductions.Wildberries.Models;
 
 namespace WildberriesDeductions
 {
@@ -9,16 +8,11 @@ namespace WildberriesDeductions
     {
         static async Task Main(string[] args)
         {
-            var configs = Factory.LoadConfigs();
-
+            var configs = Factory.LoadConfigs(); // конфиги для всех запросов (url, payload, method, headers), хранятся в json файлах
             HttpClient httpClient = new();
-
             WbRequestService wbService = new(httpClient);
-
-            TokenStorage storage = new();
-
+            TokenStorage storage = new(); // для хранения токена в файле, чтобы не логиниться при каждом запуске
             AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig);
-
             Client client = new(authService, wbService, configs);
 
 
@@ -38,15 +32,13 @@ namespace WildberriesDeductions
             }
 
             var allPickpoints = await client.TryGetPickpointsListAsync();
+
+            // заранее собираем токены (живут 24 часа) для всех пунктов выдачи, чтобы не делать это при каждом запросе данных
             foreach (var pickpoint in allPickpoints)
-            {
                 await client.TrySwitchAsync(pickpoint);
-                Debug.WriteLine($"ТОкены пвз: {pickpoint.Name} {pickpoint.Token}");
-            }
 
             while (true)
             {
-
                 var selectedPickpoints = SpectreConsole.SelectPickpoints(allPickpoints);
 
                 List<DeductionGood> deductionGoods = new();
@@ -55,20 +47,16 @@ namespace WildberriesDeductions
                     foreach (var pickpoint in selectedPickpoints)
                     {
                         ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
-                        var handingGoods = await client.TryGetHandingGoodsAsync(pickpoint);
-                        deductionGoods.AddRange(handingGoods.Select(g => g.ToDomain()));
+                        deductionGoods.AddRange(await client.TryGetHandingGoodsAsync(pickpoint));
 
                         ctx.Status($"Получение брака для {pickpoint.Name}...");
-                        var defectGoods = await client.TryGetDefectGoodsAsync(pickpoint);
-                        deductionGoods.AddRange(defectGoods.Select(g => g.ToDomain()));
+                        deductionGoods.AddRange(await client.TryGetDefectGoodsAsync(pickpoint));
 
                         ctx.Status($"Получение подмен для {pickpoint.Name}...");
-                        var replaceGoods = await client.TryGetReplaceGoodsAsync(pickpoint);
-                        deductionGoods.AddRange(replaceGoods.Select(g => g.ToDomain()));
+                        deductionGoods.AddRange(await client.TryGetReplaceGoodsAsync(pickpoint));
 
                         ctx.Status($"Получение тикетов для {pickpoint.Name}...");
-                        var tickets = await client.TryGetTicketsAsync(pickpoint);
-                        deductionGoods.AddRange(tickets.Select(g => g.ToDomain()));
+                        deductionGoods.AddRange(await client.TryGetTicketsAsync(pickpoint));
                     }
                 });
 
@@ -76,25 +64,25 @@ namespace WildberriesDeductions
                 while (true)
                 {
                     var deduction = SpectreConsole.SelectDeduction(deductionGoods);
-                    if (deduction == null)
-                    {
+                    if (deduction == null) // проверка на назад
                         break;
-                    }
-                    else
+                    else if (deduction.Details == null) // если детали уже были загружены, то не грузим их снова
                     {
-                        if (deduction.Shk != 0)
-                        {
-                            var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.Pickpoint);
+                        var deductionDetails = await AnsiConsole.Status()
+                            .Spinner(Spinner.Known.Dots)
+                            .StartAsync("Загрузка...", async ctx =>
+                            {
+                                var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.Pickpoint);
 
-                            var rawDeductionDetails = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
-                            var deductionDetails = rawDeductionDetails.ToEnrich(deduction);
+                                ctx.Status($"Получение данных по ШК {deduction.Shk}...");
+                                var details = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
 
-                            SpectreConsole.ShowDeductionScreen(deductionDetails);
-                        }
+                                return deduction.ToEnrich(details); // дополняем удержание данными по ШК
+                            });
                     }
+                    SpectreConsole.ShowDeductionScreen(deduction);
                 }
             }
         }
     }
 }
-

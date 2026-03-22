@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using WildberriesDeductions.Models;
+using WildberriesDeductions.Wildberries.Models;
 
-namespace WildberriesDeductions
+namespace WildberriesDeductions.Wildberries
 {
     public class Client(AuthService authService, WbRequestService wbService, AllConfigs configs)
     {
@@ -13,7 +13,6 @@ namespace WildberriesDeductions
             var result = await wbService.Switch(configs.switchConfig, _tokenForSwitch, pickpoint);
             pickpoint.Token = result.Access.Token;
             Debug.WriteLine($"Запрос switch на {pickpoint.Name} выполнен.");
-
         }
 
         public async Task<List<Pickpoint>> TryGetPickpointsListAsync()
@@ -26,19 +25,19 @@ namespace WildberriesDeductions
             return result.Pickpoints;
         }
 
-        public async Task<List<DefectGood>> TryGetDefectGoodsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> TryGetDefectGoodsAsync(Pickpoint pickpoint)
         {
-            List<DefectGood> defectGoods = new();
+            List<DeductionGood> result = new();
             try
             {
-                var result = await wbService.GetGoods<DefectGoodsRoot>(configs.defectGoodsConfig, pickpoint);
+                var rawData = await wbService.GetGoods<DefectGoodsRoot>(configs.defectGoodsConfig, pickpoint);
                 Debug.WriteLine($"Запрос defectGoods на {pickpoint.Name} выполнен.");
-                foreach (var item in result.Goods)
+                foreach (var item in rawData.Goods)
                 {
                     if (item.TicketId == 0 && item.BalanceStatus == "to_hold")
                     {
                         item.Pickpoint = pickpoint.Name;
-                        defectGoods.Add(item);
+                        result.Add(item.ToDomain());
                     }
                 }
             }
@@ -47,23 +46,23 @@ namespace WildberriesDeductions
                 Console.WriteLine($"Ошибка при получении данных об удержаниях по бракованным товарам на пвз {pickpoint.Name}.");
             }
 
-            return defectGoods;
+            return result;
         }
 
 
-        public async Task<List<ReplaceGood>> TryGetReplaceGoodsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> TryGetReplaceGoodsAsync(Pickpoint pickpoint)
         {
-            List<ReplaceGood> replaceGoods = new();
+            List<DeductionGood> result = new();
             try
             {
-                var result = await wbService.GetGoods<ReplaceGoodsRoot>(configs.replaceGoodsConfig, pickpoint);
-                Debug.WriteLine($"Запрос replaceGoods на {pickpoint.Name} выполнен.");
-                foreach (var item in result.Goods)
+                var rawData = await wbService.GetGoods<ReplaceGoodsRoot>(configs.replaceGoodsConfig, pickpoint);
+                Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
+                foreach (var item in rawData.Goods)
                 {
                     if (item.TicketId == 0)
                     {
                         item.Pickpoint = pickpoint.Name;
-                        replaceGoods.Add(item);
+                        result.Add(item.ToDomain());
                     }
                 }
             }
@@ -71,21 +70,21 @@ namespace WildberriesDeductions
             {
                 Console.WriteLine($"Ошибка при получении данных об удержаниях по товарам на замену на пвз {pickpoint.Name}.");
             }
-            return replaceGoods;
+            return result;
         }
-        public async Task<List<HandingGood>> TryGetHandingGoodsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> TryGetHandingGoodsAsync(Pickpoint pickpoint)
         {
-            List<HandingGood> handingGoods = new();
+            List<DeductionGood> result = new();
             try
             {
-                var result = await wbService.GetGoods<HandingGoodsRoot>(configs.handingGoodsConfig, pickpoint);
-                Debug.WriteLine($"Запрос handingGoods на {pickpoint.Name} выполнен.");
-                foreach (var item in result.data.Goods)
+                var rawData = await wbService.GetGoods<HandingGoodsRoot>(configs.handingGoodsConfig, pickpoint);
+                Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
+                foreach (var item in rawData.data.Goods)
                 {
                     if (item.Type == "expired" && item.TicketId == 0)
                     {
                         item.Pickpoint = pickpoint.Name;
-                        handingGoods.Add(item);
+                        result.Add(item.ToDomain());
                     }
                 }
             }
@@ -93,26 +92,26 @@ namespace WildberriesDeductions
             {
                 Console.WriteLine($"Ошибка при получении данных об удержаниях по зависшим ШК на пвз {pickpoint.Name}.");
             }
-            return handingGoods;
+            return result;
         }
 
-        public async Task<List<Ticket>> TryGetTicketsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> TryGetTicketsAsync(Pickpoint pickpoint)
         {
-            List<Ticket> tickets = new();
+            List<DeductionGood> result = new();
             try
             {
-                var result = await wbService.GetGoods<WbTicketsResponse>(configs.ticketsConfig, pickpoint);
-                Debug.WriteLine($"Запрос tickets на {pickpoint.Name} выполнен.");
+                var rawData = await wbService.GetGoods<WbTicketsResponse>(configs.ticketsConfig, pickpoint);
+                Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
 
 
-                foreach (var item in result.Data)
+                foreach (var item in rawData.Data)
                 {
                     var mappedItem = item.ToDomain();
 
                     if (item.State != 3 && item.TicketId != 0 && mappedItem.OnHoldDate != null)
                     {
                         item.Pickpoint = pickpoint.Name;
-                        tickets.Add(item);
+                        result.Add(item.ToDomain());
                     }
                 }
             }
@@ -120,7 +119,7 @@ namespace WildberriesDeductions
             {
                 Console.WriteLine($"Ошибка при получении данных о тикетах на пвз {pickpoint.Name}.");
             }
-            return tickets;
+            return result;
         }
 
 
