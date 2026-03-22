@@ -13,14 +13,13 @@ namespace WildberriesDeductions.Models
         [JsonPropertyName("goods")]
         public List<HandingGood> Goods { get; set; } = new();
     }
-    public class HandingGood : GoodsInterface
+    public class HandingGood
     {
         [JsonPropertyName("scanned_code")]
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long Shk { get; set; }
-        private DateTime? _onHoldDate;
         [JsonPropertyName("on_hold_date")]
-        public DateTime? OnHoldDate { get;  set; }
+        public DateTimeOffset? OnHoldDate { get;  set; }
 
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }

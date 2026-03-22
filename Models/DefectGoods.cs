@@ -8,7 +8,7 @@ namespace WildberriesDeductions.Models
         public List<DefectGood> Goods { get; set; } = new();
     }
 
-    public class DefectGood : GoodsInterface
+    public class DefectGood
     {
         public string Reason { get; set; } = "Брак";
         public string Pickpoint { get; set; } = "";
@@ -16,7 +16,7 @@ namespace WildberriesDeductions.Models
         public long Shk { get; set; }
 
         [JsonPropertyName("on_hold_date")]
-        public DateTime? OnHoldDate { get; set; }
+        public DateTimeOffset? OnHoldDate { get; set; }
 
         [JsonPropertyName("retention_price")]
         public decimal Price { get; set; }

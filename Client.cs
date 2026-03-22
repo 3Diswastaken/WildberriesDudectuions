@@ -96,16 +96,20 @@ namespace WildberriesDeductions
             return handingGoods;
         }
 
-        /*public async Task<List<Ticket>> TryGetTicketsAsync(Pickpoint pickpoint)
+        public async Task<List<Ticket>> TryGetTicketsAsync(Pickpoint pickpoint)
         {
             List<Ticket> tickets = new();
             try
             {
                 var result = await wbService.GetGoods<WbTicketsResponse>(configs.ticketsConfig, pickpoint);
                 Debug.WriteLine($"Запрос tickets на {pickpoint.Name} выполнен.");
+
+
                 foreach (var item in result.Data)
                 {
-                    if (item.State != 3 && item.TicketId != 0 && item.OnHoldDate != null)
+                    var mappedItem = item.ToDomain();
+
+                    if (item.State != 3 && item.TicketId != 0 && mappedItem.OnHoldDate != null)
                     {
                         item.Pickpoint = pickpoint.Name;
                         tickets.Add(item);
@@ -117,7 +121,7 @@ namespace WildberriesDeductions
                 Console.WriteLine($"Ошибка при получении данных о тикетах на пвз {pickpoint.Name}.");
             }
             return tickets;
-        }*/
+        }
 
 
         public async Task<WbGoodSearchEntry> TryFindByShkAsync(string shk, Pickpoint pickpoint)
@@ -127,7 +131,7 @@ namespace WildberriesDeductions
             string shk64base = Convert.ToBase64String(textBytes);
             try
             {
-                var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, shk);
+                var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, shk64base);
                 Debug.WriteLine($"Запрос поиска шк на {pickpoint.Name} выполнен.");
                 if (result.Data != null)
                 {

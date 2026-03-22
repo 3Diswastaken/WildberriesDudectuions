@@ -21,9 +21,6 @@ namespace WildberriesDeductions
 
             Client client = new(authService, wbService, configs);
 
-            //List<GoodsInterface> allGoods = new();
-
-            //test
 
             if (!authService.IsTokenValid())
             {
@@ -40,9 +37,16 @@ namespace WildberriesDeductions
                 }
             }
 
+            var allPickpoints = await client.TryGetPickpointsListAsync();
+            foreach (var pickpoint in allPickpoints)
+            {
+                await client.TrySwitchAsync(pickpoint);
+                Debug.WriteLine($"ТОкены пвз: {pickpoint.Name} {pickpoint.Token}");
+            }
+
             while (true)
             {
-                var allPickpoints = await client.TryGetPickpointsListAsync();
+
                 var selectedPickpoints = SpectreConsole.SelectPickpoints(allPickpoints);
 
                 List<DeductionGood> deductionGoods = new();
@@ -50,9 +54,6 @@ namespace WildberriesDeductions
                 {
                     foreach (var pickpoint in selectedPickpoints)
                     {
-                        ctx.Status($"Переключение на {pickpoint.Name}...");
-                        await client.TrySwitchAsync(pickpoint);
-
                         ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
                         var handingGoods = await client.TryGetHandingGoodsAsync(pickpoint);
                         deductionGoods.AddRange(handingGoods.Select(g => g.ToDomain()));
@@ -65,12 +66,12 @@ namespace WildberriesDeductions
                         var replaceGoods = await client.TryGetReplaceGoodsAsync(pickpoint);
                         deductionGoods.AddRange(replaceGoods.Select(g => g.ToDomain()));
 
-                        /* ctx.Status($"Получение тикетов для {pickpoint.Name}...");
-                         var tickets = await client.TryGetTicketsAsync(pickpoint);
-                         allGoods.AddRange(tickets);*/
+                        ctx.Status($"Получение тикетов для {pickpoint.Name}...");
+                        var tickets = await client.TryGetTicketsAsync(pickpoint);
+                        deductionGoods.AddRange(tickets.Select(g => g.ToDomain()));
                     }
                 });
-                //SpectreConsole.PrintDeductionGoods(allGoods);
+
 
                 while (true)
                 {
@@ -78,21 +79,22 @@ namespace WildberriesDeductions
                     if (deduction == null)
                     {
                         break;
-                    } else
+                    }
+                    else
                     {
-                        var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.Pickpoint);
+                        if (deduction.Shk != 0)
+                        {
+                            var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.Pickpoint);
 
-                        await client.TrySwitchAsync(deductionPickpoint);
-                        var rawDeductionDetails = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
-                        var deductionDetails = rawDeductionDetails.ToEnrich(deduction);
+                            var rawDeductionDetails = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
+                            var deductionDetails = rawDeductionDetails.ToEnrich(deduction);
 
-
-                        Debug.WriteLine($"Размер: {deductionDetails.Details.Size}");
+                            SpectreConsole.ShowDeductionScreen(deductionDetails);
+                        }
                     }
                 }
             }
-
-            Console.ReadLine();
         }
     }
 }
+

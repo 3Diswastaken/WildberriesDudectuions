@@ -52,6 +52,8 @@ namespace WildberriesDeductions
 
         public static List<Pickpoint> SelectPickpoints(List<Pickpoint> allPickpoints)
         {
+            AnsiConsole.Clear();
+
             var selectedPickpoints = AnsiConsole.Prompt(
                 new MultiSelectionPrompt<Pickpoint>()
                     .Title("Выберите ПВЗ для получения данных:")
@@ -66,22 +68,23 @@ namespace WildberriesDeductions
 
         public static DeductionGood? SelectDeduction(List<DeductionGood> deductions)
         {
+            AnsiConsole.Clear();
+
             var prompt = new SelectionPrompt<object>()
                 .Title("[yellow]Выберите товар для деталей или вернитесь назад:[/]")
                 .PageSize(15)
                 .MoreChoicesText("[grey](Листайте вниз, чтобы увидеть все товары)[/]")
-                .AddChoices("<- НАЗАД (К выбору ПВЗ)")
+                .AddChoices("<- Назад (К выбору ПВЗ)")
                 .AddChoices(deductions.OrderBy(g => g.OnHoldDate).Cast<object>());
 
             prompt.UseConverter(item =>
             {
-                if (item is string str)
-                    return $"[red]{str}[/]";
                 if (item is DeductionGood d)
                 {
                     string date = d.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "Нет данных";
-                    string pp = d.Pickpoint.Length > 25 ? d.Pickpoint[..22] + "..." : d.Pickpoint;
-                    return $"| {date} | {d.Reason, -12} | {pp, -25} | {d.DeductionPrice, -6} руб. | {d.Shk, -15} |";
+                    string pp = d.Pickpoint.Length > 40 ? d.Pickpoint[..37] + "..." : d.Pickpoint;
+                    string price = d.DeductionPrice.ToString() + " руб.";
+                    return $" {date}  {d.Reason, -12}  {pp, -40}  {price, -12}  {d.Shk, -15} ";
                 }
 
                 return item.ToString() ?? "Неизвестно";
@@ -94,55 +97,72 @@ namespace WildberriesDeductions
             return selected as DeductionGood;
         }
 
-        /*public static void PrintDeductionDetails(DeductionGood deduction)
+        public static void PrintDeductionDetails(DeductionGood deduction)
         {
+            AnsiConsole.Clear();
+
             var table = new Table();
-            table.AddColumns("Дата удержания", "Вид удержания", "ПВЗ", "Стоимость", "ШК");
-            table.RoundedBorder();
-            table.Width = AnsiConsole.Console.Profile.Width;
             table.Title("Детали удержания");
-            string price = deduction.DeductionPrice.ToString() + " руб.";
-            string Shk = deduction.Shk.ToString();
-            table.AddRow(
-                deduction.OnHoldDate?.ToLocalTime().ToString(),
-                deduction.Reason,
-                deduction.Pickpoint,
-                price,
-                Shk
-            );
-            AnsiConsole.Write(table);
-        }*/
-
-
-        public static void PrintDeductionGoods(List<GoodsInterface> allGoods)
-        {
-            Table table = new Table();
-            table.AddColumns("Дата удержания", "Вид удержания", "ПВЗ", "Стоимость", "ШК");
-            table.RoundedBorder();
+            table.AddColumns("Время отметки о браке", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК");
             table.Width = AnsiConsole.Console.Profile.Width;
-            table.Title("Удержания");
-            allGoods = allGoods.OrderBy(g => g.OnHoldDate).ToList();
-            foreach (var goods in allGoods)
-            {
-                string price = goods.Price.ToString();
-                price += " руб.";
-                string Shk = goods.Shk.ToString();
-                if (goods is Ticket)
-                {
-                    Shk = goods.TicketId.ToString();
-                    price = "-";
-                    table.Columns[4].Header = new Text("ШК | Номер тикета");
-                }
 
-                table.AddRow(
-                    goods.OnHoldDate?.ToLocalTime().ToString(),
-                    goods.Reason,
-                    goods.Pickpoint,
-                    price,
-                    Shk
-                );
+            string price = deduction.DeductionPrice.ToString() + " руб.";
+            string shk = deduction.Shk.ToString();
+            string date = deduction.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss");
+            string defectMarkDate = deduction.Details.DefectMark.FirstOrDefault()?.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "-";
+
+
+            table.AddRow(
+                defectMarkDate,
+                date,
+                deduction.Reason,
+                price,
+                shk
+            );
+
+            var statusHistoryTable = new Table();
+            statusHistoryTable.Width = AnsiConsole.Console.Profile.Width;
+            var statusHistory = deduction.Details.StatusHistory.ToList();
+            statusHistoryTable.AddColumns("Статус", "Время", "Сотрудник");
+            foreach (var status in statusHistory)
+            {
+                statusHistoryTable.AddRow(
+                    status.StatusName,
+                    status.Date.ToString("dd.MM.yyyy HH:mm:ss"),
+                    status.EmployeeFullName
+                    );
             }
             AnsiConsole.Write(table);
+            AnsiConsole.Write(statusHistoryTable);
+        }
+
+        public enum DetailsAction {Back}
+
+        public static DetailsAction ShowDetailsMenu()
+        {
+            return AnsiConsole.Prompt(
+                new SelectionPrompt<DetailsAction>()
+                    .Title("[grey]Выберите действие:[/]")
+                    .UseConverter(a => a switch {
+                        DetailsAction.Back => "<- Вернуться к списку"
+                    })
+                    .AddChoices(DetailsAction.Back)
+            );
+        }
+
+        public static void ShowDeductionScreen(DeductionGood deduction)
+        {
+            bool stayOnScreen = true;
+            while (stayOnScreen)
+            {
+                PrintDeductionDetails(deduction);
+                var action = ShowDetailsMenu();
+
+                if (action == DetailsAction.Back)
+                {
+                    stayOnScreen = false; // Выходим из цикла, метод завершится
+                }
+            }
         }
     }
 }

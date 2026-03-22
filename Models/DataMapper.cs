@@ -47,6 +47,24 @@ namespace WildberriesDeductions.Models
             };
         }
 
+        public static DeductionGood ToDomain(this Ticket raw)
+        {
+            DateTimeOffset? onHoldDate = null;
+            if (raw.Logs?.Any() == true && raw.Logs[^1].FullName.Trim() != "Руслан")
+                onHoldDate = raw.Logs[^1].CreateDate.Value.AddDays(2);
+
+            return new DeductionGood
+            {
+
+                Shk = 0, 
+                DeductionPrice = 0,
+                OnHoldDate = onHoldDate,
+                Pickpoint = raw.Pickpoint,
+                TicketId = raw.TicketId,
+                Reason = raw.Reason
+            };
+        }
+
         public static DeductionGood ToEnrich(this WbGoodSearchEntry raw, DeductionGood deduction)
         {
             if (raw == null || deduction == null) return deduction;

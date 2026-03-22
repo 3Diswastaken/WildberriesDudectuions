@@ -11,7 +11,7 @@ namespace WildberriesDeductions.Models
     {
         public long Shk { get; set; }
         public decimal DeductionPrice { get; set; }
-        public DateTime? OnHoldDate { get; set; }
+        public DateTimeOffset? OnHoldDate { get; set; }
 
         public string Pickpoint { get; set; } = string.Empty;
         public long TicketId { get; set; }

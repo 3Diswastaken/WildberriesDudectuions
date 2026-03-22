@@ -8,7 +8,7 @@ namespace WildberriesDeductions.Models
         public List<ReplaceGood> Goods { get; set; } = new();
     }
 
-    public class ReplaceGood : GoodsInterface
+    public class ReplaceGood
     {
         public string Reason { get; set; } = "Подмена";
         public string Pickpoint { get; set; } = "";
@@ -20,7 +20,7 @@ namespace WildberriesDeductions.Models
         public decimal Price { get; set; }
 
         [JsonPropertyName("on_hold_date")]
-        public DateTime? OnHoldDate { get; set; }
+        public DateTimeOffset? OnHoldDate { get; set; }
 
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }
