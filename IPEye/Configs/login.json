@@ -1,0 +1,27 @@
+{
+  "Url": "https://www.ipeye.ru/ipeye_service/index.php?route=proc_login",
+  "Headers": {
+    "accept": "application/json, text/javascript, */*; q=0.01",
+    "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "dnt": "1",
+    "origin": "https://www.ipeye.ru",
+    "priority": "u=1, i",
+    "referer": "https://www.ipeye.ru/",
+    "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "x-requested-with": "XMLHttpRequest"
+  },
+  "Method": "POST",
+  "Payload": {
+    "service_url_relative": "ipeye_service/",
+    "login": "login",
+    "pass": "password",
+    "captcha": "false"
+  }
+}
