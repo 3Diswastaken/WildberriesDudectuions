@@ -68,7 +68,7 @@ namespace WildberriesDeductions
 
             var prompt = new SelectionPrompt<object>()
                 .Title("[yellow]Выберите товар для деталей или вернитесь назад:[/]")
-                .PageSize(15)
+                .PageSize(30)
                 .MoreChoicesText("[grey](Листайте вниз, чтобы увидеть все товары)[/]")
                 .AddChoices("<- Назад (К выбору ПВЗ)")
                 .AddChoices(deductions.OrderBy(g => g.OnHoldDate).Cast<object>());

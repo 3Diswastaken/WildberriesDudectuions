@@ -5,7 +5,7 @@ namespace WildberriesDeductions.Wildberries
 {
     public static class ConfigLoader
     {
-        private static readonly string ConfigDirectory = "C:\\Users\\Руслан\\source\\repos\\3Diswastaken\\WildberriesDudectuions\\configs\\";
+        private static readonly string ConfigDirectory = "C:\\Users\\Руслан\\source\\repos\\3Diswastaken\\WildberriesDudectuions\\Wildberries\\configs\\";
         private static RequestConfig _commonHeaders;
         public static T Load<T>(string fileName)
         {
