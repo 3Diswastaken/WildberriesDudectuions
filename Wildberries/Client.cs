@@ -32,6 +32,8 @@ namespace WildberriesDeductions.Wildberries
             {
                 var rawData = await wbService.GetGoods<DefectGoodsRoot>(configs.defectGoodsConfig, pickpoint);
                 Debug.WriteLine($"Запрос defectGoods на {pickpoint.Name} выполнен.");
+                if (rawData.Goods == null)
+                    return result;
                 foreach (var item in rawData.Goods)
                 {
                     if (item.TicketId == 0 && item.BalanceStatus == "to_hold")
@@ -57,6 +59,7 @@ namespace WildberriesDeductions.Wildberries
             {
                 var rawData = await wbService.GetGoods<ReplaceGoodsRoot>(configs.replaceGoodsConfig, pickpoint);
                 Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
+                if (rawData.Goods == null) return result;
                 foreach (var item in rawData.Goods)
                 {
                     if (item.TicketId == 0)
@@ -79,6 +82,7 @@ namespace WildberriesDeductions.Wildberries
             {
                 var rawData = await wbService.GetGoods<HandingGoodsRoot>(configs.handingGoodsConfig, pickpoint);
                 Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
+                if (rawData.data.Goods == null) return result;
                 foreach (var item in rawData.data.Goods)
                 {
                     if (item.Type == "expired" && item.TicketId == 0)
