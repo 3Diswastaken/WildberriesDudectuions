@@ -99,18 +99,18 @@ namespace WildberriesDeductions
 
             var table = new Table();
             table.Title("Детали удержания");
-            table.AddColumns("Время отметки о браке", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК", "Ячейка");
+            table.AddColumns("ПВЗ", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК", "Ячейка");
             table.Width = AnsiConsole.Console.Profile.Width;
 
             string price = deduction.DeductionPrice.ToString() + " руб.";
             string shk = deduction.Shk.ToString();
             string date = deduction.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss");
-            string defectMarkDate = deduction.Details.DefectMark.FirstOrDefault()?.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "-";
+            string pickpoint = deduction.PickpointName;
             string cell = deduction.Details.Cell.ToString();
 
 
             table.AddRow(
-                defectMarkDate,
+                pickpoint,
                 date,
                 deduction.Reason,
                 price,
@@ -119,6 +119,7 @@ namespace WildberriesDeductions
             );
 
             var statusHistoryTable = new Table();
+            statusHistoryTable.Title("История статусов товара");
             statusHistoryTable.Width = AnsiConsole.Console.Profile.Width;
             var statusHistory = deduction.Details.StatusHistory.ToList();
             statusHistoryTable.AddColumns("Статус", "Время", "Сотрудник");
@@ -130,7 +131,20 @@ namespace WildberriesDeductions
                     status.EmployeeFullName
                     );
             }
+
+            var defectMarkTable = new Table();
+            defectMarkTable.Title("Данные об отметке о браке");
+            defectMarkTable.Width = AnsiConsole.Console.Profile.Width;
+            var defectMark = deduction.Details.DefectMark.FirstOrDefault();
+            defectMarkTable.AddColumns("Дата отметки о браке", "Комментарий", "Фотографии");
+            var defectMarkPhotos = defectMark?.Photos ?? new List<string>();
+            string photosUrl = string.Join("\n", defectMarkPhotos.Select((url, i) => $"{url}"));
+
+            defectMarkTable.AddRow(defectMark.Date.ToString("dd.MM.yyyy HH:mm:ss") ?? "-", defectMark.Comment ?? "-", photosUrl ?? "-");
+
+
             AnsiConsole.Write(table);
+            AnsiConsole.Write(defectMarkTable);
             AnsiConsole.Write(statusHistoryTable);
         }
 
