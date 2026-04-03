@@ -78,9 +78,9 @@ namespace WildberriesDeductions
                 if (item is DeductionGood d)
                 {
                     string date = d.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "Нет данных";
-                    string pp = d.Pickpoint.Length > 40 ? d.Pickpoint[..37] + "..." : d.Pickpoint;
+                    string pp = d.ShortPickpointName.Length > 20 ? d.ShortPickpointName[..17] + "..." : d.ShortPickpointName;
                     string price = d.DeductionPrice.ToString() + " руб.";
-                    return $" {date}  {d.Reason, -12}  {pp, -40}  {price, -12}  {d.Shk, -15} ";
+                    return $" {date}  {d.Reason, -12}  {pp, -20}  {price, -12}  {d.Shk, -15} ";
                 }
 
                 return item.ToString() ?? "Неизвестно";

@@ -72,7 +72,7 @@ namespace WildberriesDeductions
                             .Spinner(Spinner.Known.Dots)
                             .StartAsync("Загрузка...", async ctx =>
                             {
-                                var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.Pickpoint);
+                                var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.PickpointName);
 
                                 ctx.Status($"Получение данных по ШК {deduction.Shk}...");
                                 var details = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);

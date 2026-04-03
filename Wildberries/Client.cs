@@ -31,16 +31,13 @@ namespace WildberriesDeductions.Wildberries
             try
             {
                 var rawData = await wbService.GetGoods<DefectGoodsRoot>(configs.defectGoodsConfig, pickpoint);
-                Debug.WriteLine($"Запрос defectGoods на {pickpoint.Name} выполнен.");
+                Debug.WriteLine($"Запрос браков на {pickpoint.Name} выполнен.");
                 if (rawData.Goods == null)
                     return result;
                 foreach (var item in rawData.Goods)
                 {
                     if (item.TicketId == 0 && item.BalanceStatus == "to_hold")
-                    {
-                        item.Pickpoint = pickpoint.Name;
-                        result.Add(item.ToDomain());
-                    }
+                        result.Add(item.ToDomain(pickpoint.Name));
                 }
             }
             catch
@@ -58,15 +55,12 @@ namespace WildberriesDeductions.Wildberries
             try
             {
                 var rawData = await wbService.GetGoods<ReplaceGoodsRoot>(configs.replaceGoodsConfig, pickpoint);
-                Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
+                Debug.WriteLine($"Запрос подмен на {pickpoint.Name} выполнен.");
                 if (rawData.Goods == null) return result;
                 foreach (var item in rawData.Goods)
                 {
                     if (item.TicketId == 0)
-                    {
-                        item.Pickpoint = pickpoint.Name;
-                        result.Add(item.ToDomain());
-                    }
+                        result.Add(item.ToDomain(pickpoint.Name));
                 }
             }
             catch
@@ -81,15 +75,12 @@ namespace WildberriesDeductions.Wildberries
             try
             {
                 var rawData = await wbService.GetGoods<HandingGoodsRoot>(configs.handingGoodsConfig, pickpoint);
-                Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
+                Debug.WriteLine($"Запрос зависших шк на {pickpoint.Name} выполнен.");
                 if (rawData.data.Goods == null) return result;
                 foreach (var item in rawData.data.Goods)
                 {
                     if (item.Type == "expired" && item.TicketId == 0)
-                    {
-                        item.Pickpoint = pickpoint.Name;
-                        result.Add(item.ToDomain());
-                    }
+                        result.Add(item.ToDomain(pickpoint.Name));
                 }
             }
             catch
@@ -105,17 +96,16 @@ namespace WildberriesDeductions.Wildberries
             try
             {
                 var rawData = await wbService.GetGoods<WbTicketsResponse>(configs.ticketsConfig, pickpoint);
-                Debug.WriteLine($"Запрос result на {pickpoint.Name} выполнен.");
+                Debug.WriteLine($"Запрос тикетов на {pickpoint.Name} выполнен.");
 
 
                 foreach (var item in rawData.Data)
                 {
-                    var mappedItem = item.ToDomain();
+                    var mappedItem = item.ToDomain(pickpoint.Name);
 
                     if (item.State != 3 && item.TicketId != 0 && mappedItem.OnHoldDate != null)
                     {
-                        item.Pickpoint = pickpoint.Name;
-                        result.Add(item.ToDomain());
+                        result.Add(mappedItem);
                     }
                 }
             }

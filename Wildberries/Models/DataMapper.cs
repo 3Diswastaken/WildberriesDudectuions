@@ -2,46 +2,70 @@
 {
     public static class DataMapper
     {
-        public static DeductionGood ToDomain(this DefectGood raw)
+        private static string ToShort(this string raw)
+        {
+            string[] words = raw.Split(' ');
+
+            string result = "";
+
+            foreach (string word in words)
+            {
+                if (string.IsNullOrWhiteSpace(word)) continue; // пропускаем пустые места, если случайно два пробела
+                if (word == "г" || word == "Улица" || word == "Калуга") continue;
+
+                char firstChar = word[0];
+
+                if (firstChar >= '0' && firstChar <= '9')
+                    result += word;
+                else
+                    result += char.ToUpper(firstChar);
+            }
+
+            return result;
+        }
+        public static DeductionGood ToDomain(this DefectGood raw, string pickpointName)
         {
             return new DeductionGood
             {
                 Shk = raw.Shk,
                 DeductionPrice = raw.Price,
                 OnHoldDate = raw.OnHoldDate,
-                Pickpoint = raw.Pickpoint,
+                PickpointName = pickpointName,
+                ShortPickpointName = pickpointName.ToShort(),
                 TicketId = raw.TicketId,
                 Reason = raw.Reason
             };
         }
 
-        public static DeductionGood ToDomain(this ReplaceGood raw)
+        public static DeductionGood ToDomain(this ReplaceGood raw, string pickpointName)
         {
             return new DeductionGood
             {
                 Shk = raw.Shk,
                 DeductionPrice = raw.Price,
                 OnHoldDate = raw.OnHoldDate,
-                Pickpoint = raw.Pickpoint,
+                PickpointName = pickpointName,
+                ShortPickpointName = pickpointName.ToShort(),
                 TicketId = raw.TicketId,
                 Reason = raw.Reason
             };
         }
 
-        public static DeductionGood ToDomain(this HandingGood raw)
+        public static DeductionGood ToDomain(this HandingGood raw, string pickpointName)
         {
             return new DeductionGood
             {
                 Shk = raw.Shk,
                 DeductionPrice = raw.Price,
                 OnHoldDate = raw.OnHoldDate,
-                Pickpoint = raw.Pickpoint,
+                PickpointName = pickpointName,
+                ShortPickpointName = pickpointName.ToShort(),
                 TicketId = raw.TicketId,
                 Reason = raw.Reason
             };
         }
 
-        public static DeductionGood ToDomain(this Ticket raw)
+        public static DeductionGood ToDomain(this Ticket raw, string pickpointName)
         {
             DateTimeOffset? onHoldDate = null;
             if (raw.Logs?.Any() == true && raw.Logs[^1].FullName.Trim() != "Руслан")
@@ -53,7 +77,8 @@
                 Shk = 0, 
                 DeductionPrice = 0,
                 OnHoldDate = onHoldDate,
-                Pickpoint = raw.Pickpoint,
+                PickpointName = pickpointName,
+                ShortPickpointName = pickpointName.ToShort(),
                 TicketId = raw.TicketId,
                 Reason = raw.Reason
             };
