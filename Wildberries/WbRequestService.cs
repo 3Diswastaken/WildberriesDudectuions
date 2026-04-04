@@ -123,7 +123,8 @@ namespace WildberriesDeductions.Wildberries
             var payload = new Dictionary<string, object>(requestConfig.Payload)
             {
                 ["token"] = token,
-                ["code"] = code.ToString()
+                ["code"] = code.ToString(),
+                ["app_version"] = requestConfig.Headers["X-App-Version"]
             };
 
             return await SendRequest<ValidateRoot>(requestConfig.Url, requestConfig.Method, payload, requestConfig.Headers);
