@@ -138,9 +138,9 @@ namespace WildberriesDeductions
             var defectMark = deduction.Details.DefectMark.FirstOrDefault();
             defectMarkTable.AddColumns("Дата отметки о браке", "Комментарий", "Фотографии");
             var defectMarkPhotos = defectMark?.Photos ?? new List<string>();
-            string photosUrl = string.Join("\n", defectMarkPhotos.Select((url, i) => $"{url}"));
+            string? photosUrl = string.Join("\n", defectMarkPhotos.Select((url, i) => $"{url}"));
 
-            defectMarkTable.AddRow(defectMark.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "-", defectMark.Comment ?? "-", photosUrl ?? "-");
+            defectMarkTable.AddRow(defectMark?.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "-", defectMark?.Comment ?? "-", photosUrl ?? "-");
 
 
             AnsiConsole.Write(table);
