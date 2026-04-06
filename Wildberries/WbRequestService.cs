@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using WildberriesDeductions.Wildberries.Models;
+using WildberriesDeductions.Wildberries.Exceptions;
 
 namespace WildberriesDeductions.Wildberries
 {
@@ -66,34 +67,44 @@ namespace WildberriesDeductions.Wildberries
             if (headers != null)
                 foreach (var header in headers) request.Headers.TryAddWithoutValidation(header.Key, header.Value);
 
+            HttpResponseMessage response;
             try
             {
-                var response = await _httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-
-                if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                {
-                    string errorJson = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine(errorJson);
-                }
-
-                string responseJson = await response.Content.ReadAsStringAsync();
-
-                return JsonSerializer.Deserialize<T>(responseJson);
-            }
-            catch (HttpRequestException ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                throw;
-            }
-            catch (JsonException ex)
-            {
-                Debug.WriteLine($"ошибка json ответа от сервера: ", ex);
-                throw;
+                // ловим только сетевые ошибки
+                response = await _httpClient.SendAsync(request);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"хуйня какая-то: ", ex);
+                Debug.WriteLine($"[Network Error] {url}: {ex.Message}");
+                throw new NetworkException("Ошибка соединения с сервером. Проверьте доступ к интернету.", ex);
+            }
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"[API Error] {url} | Status: {response.StatusCode} | Body: {responseBody}");
+
+                try
+                {
+                    var errorContent = JsonSerializer.Deserialize<ErrorResponse>(responseBody);
+                    if (errorContent?.ErrorInfo != null)
+                        throw new ApiException(errorContent.ErrorInfo.Code, errorContent.ErrorInfo.Message);
+                }
+                catch (JsonException) { } // Если не удалось распарсить тело ошибки, выбрасываем общее исключение
+
+                throw new Exception($"Сервер ответил ошибкой {response.StatusCode}: {responseBody}");
+            }
+
+            try
+            {
+                // Десериализуем успешный ответ
+                return JsonSerializer.Deserialize<T>(responseBody)
+                       ?? throw new Exception("Сервер вернул пустой ответ.");
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine($"[JSON Error] Ошибка парсинга успешного ответа: {ex.Message}");
                 throw;
             }
         }

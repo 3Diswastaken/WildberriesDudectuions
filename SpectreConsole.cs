@@ -62,9 +62,18 @@ namespace WildberriesDeductions
             return selectedPickpoints;
         }
 
-        public static DeductionGood? SelectDeduction(List<DeductionGood> deductions)
+        public static DeductionGood? SelectDeduction(List<DeductionGood> deductions, List<string> errorLog)
         {
             AnsiConsole.Clear();
+
+            if (errorLog.Any())
+            {
+                foreach (var error in errorLog)
+                {
+                    AnsiConsole.MarkupLine($"[red]{error}[/]");
+                }
+                AnsiConsole.WriteLine("");
+            }
 
             var prompt = new SelectionPrompt<object>()
                 .Title("[yellow]Выберите товар для деталей или вернитесь назад:[/]")
@@ -80,7 +89,7 @@ namespace WildberriesDeductions
                     string date = d.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "Нет данных";
                     string pp = d.ShortPickpointName.Length > 20 ? d.ShortPickpointName[..17] + "..." : d.ShortPickpointName;
                     string price = d.DeductionPrice.ToString() + " руб.";
-                    return $" {date}  {d.Reason, -12}  {pp, -20}  {price, -12}  {d.Shk, -15} ";
+                    return $" {date}  {d.Reason,-12}  {pp,-20}  {price,-12}  {d.Shk,-15} ";
                 }
 
                 return item.ToString() ?? "Неизвестно";
@@ -88,7 +97,7 @@ namespace WildberriesDeductions
 
             var selected = AnsiConsole.Prompt(prompt);
             if (selected is string)
-                return null; 
+                return null;
 
             return selected as DeductionGood;
         }
@@ -148,14 +157,15 @@ namespace WildberriesDeductions
             AnsiConsole.Write(statusHistoryTable);
         }
 
-        public enum DetailsAction {Back}
+        public enum DetailsAction { Back }
 
         public static DetailsAction ShowDetailsMenu()
         {
             return AnsiConsole.Prompt(
                 new SelectionPrompt<DetailsAction>()
                     .Title("[grey]Выберите действие:[/]")
-                    .UseConverter(a => a switch {
+                    .UseConverter(a => a switch
+                    {
                         DetailsAction.Back => "<- Вернуться к списку"
                     })
                     .AddChoices(DetailsAction.Back)
