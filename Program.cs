@@ -37,6 +37,7 @@ namespace WildberriesDeductions
                         if (ex.Message.Contains("5 минут"))
                         {
                             AnsiConsole.MarkupLine("[grey]Приложение будет закрыто. Попробуйте зайти позже.[/]");
+                            Console.ReadKey();
                             return;
                         }
                     }
@@ -48,6 +49,7 @@ namespace WildberriesDeductions
                     catch (Exception ex)
                     {
                         AnsiConsole.MarkupLine($"[red]Непредвиденная ошибка:[/] {ex.Message}");
+                        Console.ReadKey();
                         throw; 
                     }
                 }
