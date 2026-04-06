@@ -64,15 +64,17 @@ namespace WildberriesDeductions
             catch (Exception ex)
             {
                 AnsiConsole.MarkupLine($"[red]Ошибка при получении списка пунктов выдачи! Описание ошибки: {ex.Message}[/]");
-                return;
+                if (allPickpoints == null)
+                {
+                    AnsiConsole.MarkupLine("[grey]Приложение будет закрыто, так как без списка пунктов выдачи дальнейшая работа невозможна.[/]");
+                    Console.ReadKey();
+                    return;
+                }
             }
 
             // заранее собираем токены (живут 24 часа) для всех пунктов выдачи, чтобы не делать это при каждом запросе данных
             foreach (var pickpoint in allPickpoints)
             {
-                if (allPickpoints == null)
-                    break;
-
                 try
                 {
                     await client.TrySwitchAsync(pickpoint);
