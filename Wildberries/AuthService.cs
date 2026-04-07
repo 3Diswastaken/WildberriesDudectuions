@@ -63,8 +63,9 @@ namespace WildberriesDeductions.Wildberries
             string tokenForSwitch = Load();
 
             var result = await wbService.Switch(switchConfig, tokenForSwitch, pickpoint);
-            pickpoint.Token = result.Access.Token;
             Debug.WriteLine($"Запрос switch на {pickpoint.Name} выполнен.");
+
+            return result.Access.Token;
         }
     }
 }
