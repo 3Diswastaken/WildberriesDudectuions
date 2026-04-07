@@ -42,7 +42,7 @@ namespace WildberriesDeductions
 
                             case "code":
                                 int code = SpectreConsole.AskForCode();
-                                await authService.ValidateAsync(code, tokenForValidate);
+                                await authService.ValidateCodeAndSaveTokenAsync(code, tokenForValidate);
                                 isAuthorized = true;
                                 break;
                         }
@@ -94,13 +94,12 @@ namespace WildberriesDeductions
             {
                 try
                 {
-                    await authService.UpdatePickpointToken(pickpoint);
+                    pickpoint.Token = await authService.UpdatePickpointToken(pickpoint);
                 }
                 catch (Exception ex)
                 {
-                    errorLog.Add($"Ошибка при переключении на ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
-                }
-                ;
+                    errorLog.Add($"Ошибка при создании токена для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
+                };
             }
 
             while (true)

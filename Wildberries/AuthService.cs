@@ -46,7 +46,7 @@ namespace WildberriesDeductions.Wildberries
             return tokenForValidate;
         }
 
-        public async Task<bool> ValidateAsync(int code, string tokenForValidate)
+        public async Task<bool> ValidateCodeAndSaveTokenAsync(int code, string tokenForValidate)
         {
             string tokenForSwitch = string.Empty;
 
@@ -58,7 +58,7 @@ namespace WildberriesDeductions.Wildberries
             return true;
         }
 
-        public async Task  UpdatePickpointToken(Pickpoint pickpoint)
+        public async Task<string>  UpdatePickpointToken(Pickpoint pickpoint)
         {
             string tokenForSwitch = Load();
 
