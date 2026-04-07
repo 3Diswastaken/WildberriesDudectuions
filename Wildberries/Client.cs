@@ -6,7 +6,7 @@ namespace WildberriesDeductions.Wildberries
 {
     public class Client(AuthService authService, WbRequestService wbService, AllConfigs configs)
     {
-        public async Task TrySwitchAsync(Pickpoint pickpoint)
+        public async Task SwitchAsync(Pickpoint pickpoint)
         {
             string _tokenForSwitch = authService.Load();
 
@@ -15,7 +15,7 @@ namespace WildberriesDeductions.Wildberries
             Debug.WriteLine($"Запрос switch на {pickpoint.Name} выполнен.");
         }
 
-        public async Task<List<Pickpoint>> TryGetPickpointsListAsync()
+        public async Task<List<Pickpoint>> GetPickpointsListAsync()
         {
             string _token = authService.Load();
 
@@ -25,7 +25,7 @@ namespace WildberriesDeductions.Wildberries
             return result.Pickpoints;
         }
 
-        public async Task<List<DeductionGood>> TryGetDefectGoodsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> GetDefectGoodsAsync(Pickpoint pickpoint)
         {
             List<DeductionGood> result = new();
 
@@ -43,7 +43,7 @@ namespace WildberriesDeductions.Wildberries
         }
 
 
-        public async Task<List<DeductionGood>> TryGetReplaceGoodsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> GetReplaceGoodsAsync(Pickpoint pickpoint)
         {
             List<DeductionGood> result = new();
 
@@ -58,7 +58,7 @@ namespace WildberriesDeductions.Wildberries
 
             return result;
         }
-        public async Task<List<DeductionGood>> TryGetHandingGoodsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> GetHandingGoodsAsync(Pickpoint pickpoint)
         {
             List<DeductionGood> result = new();
 
@@ -74,7 +74,7 @@ namespace WildberriesDeductions.Wildberries
             return result;
         }
 
-        public async Task<List<DeductionGood>> TryGetTicketsAsync(Pickpoint pickpoint)
+        public async Task<List<DeductionGood>> GetTicketsAsync(Pickpoint pickpoint)
         {
             List<DeductionGood> result = new();
 
@@ -93,23 +93,13 @@ namespace WildberriesDeductions.Wildberries
         }
 
 
-        public async Task<WbGoodSearchEntry> TryFindByShkAsync(string shk, Pickpoint pickpoint)
+        public async Task<WbGoodSearchEntry> FindByShkAsync(string shk, Pickpoint pickpoint)
         {
-            List<WbGoodSearchEntry> Good = new();
-            byte[] textBytes = Encoding.UTF8.GetBytes(shk);
-            string shk64base = Convert.ToBase64String(textBytes);
-
-            var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, shk64base);
+            var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, shk);
+            var details = result?.Data?.FirstOrDefault();
             Debug.WriteLine($"Запрос поиска шк на {pickpoint.Name} выполнен.");
-            if (result.Data != null)
-            {
-                foreach (var item in result.Data)
-                {
-                    Good.Add(item);
-                }
-            }
 
-            return Good.FirstOrDefault();
+            return details;
         }
     }
 }

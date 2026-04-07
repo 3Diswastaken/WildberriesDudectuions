@@ -168,11 +168,14 @@ namespace WildberriesDeductions.Wildberries
 
         public async Task<WbGoodSearchResponse> FindByShk(RequestConfig requestConfig, Pickpoint pickpoint, string shk)
         {
+            byte[] textBytes = Encoding.UTF8.GetBytes(shk);
+            string shk64base = Convert.ToBase64String(textBytes);
+
             string url = BuildUrl(requestConfig, pickpoint);
             var withRuntimeHeaders = InitializeHeaders(requestConfig, pickpoint);
             var payload = new Dictionary<string, object>(requestConfig.Payload)
             {
-                ["search_base64"] = shk
+                ["search_base64"] = shk64base
             };
 
             return await SendRequest<WbGoodSearchResponse>(url, requestConfig.Method, payload, withRuntimeHeaders.Headers);

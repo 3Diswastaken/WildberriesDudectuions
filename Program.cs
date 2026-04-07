@@ -59,7 +59,7 @@ namespace WildberriesDeductions
 
             try
             {
-                allPickpoints = await client.TryGetPickpointsListAsync();
+                allPickpoints = await client.GetPickpointsListAsync();
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ namespace WildberriesDeductions
             {
                 try
                 {
-                    await client.TrySwitchAsync(pickpoint);
+                    await client.SwitchAsync(pickpoint);
                 }
                 catch (Exception ex)
                 {
@@ -98,16 +98,16 @@ namespace WildberriesDeductions
                         try
                         {
                             ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.TryGetHandingGoodsAsync(pickpoint));
+                            deductionGoods.AddRange(await client.GetHandingGoodsAsync(pickpoint));
 
                             ctx.Status($"Получение брака для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.TryGetDefectGoodsAsync(pickpoint));
+                            deductionGoods.AddRange(await client.GetDefectGoodsAsync(pickpoint));
 
                             ctx.Status($"Получение подмен для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.TryGetReplaceGoodsAsync(pickpoint));
+                            deductionGoods.AddRange(await client.GetReplaceGoodsAsync(pickpoint));
 
                             ctx.Status($"Получение тикетов для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.TryGetTicketsAsync(pickpoint));
+                            deductionGoods.AddRange(await client.GetTicketsAsync(pickpoint));
                         }
                         catch (Exception ex)
                         {
@@ -131,7 +131,7 @@ namespace WildberriesDeductions
                                 var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.PickpointName);
 
                                 ctx.Status($"Получение данных по ШК {deduction.Shk}...");
-                                var details = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
+                                var details = await client.FindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
 
                                 return deduction.ToEnrich(details); // дополняем удержание данными по ШК
                             });
