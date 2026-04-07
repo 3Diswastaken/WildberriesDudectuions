@@ -6,14 +6,7 @@ namespace WildberriesDeductions.Wildberries
 {
     public class Client(AuthService authService, WbRequestService wbService, AllConfigs configs)
     {
-        public async Task SwitchAsync(Pickpoint pickpoint)
-        {
-            string _tokenForSwitch = authService.Load();
-
-            var result = await wbService.Switch(configs.switchConfig, _tokenForSwitch, pickpoint);
-            pickpoint.Token = result.Access.Token;
-            Debug.WriteLine($"Запрос switch на {pickpoint.Name} выполнен.");
-        }
+        
 
         public async Task<List<Pickpoint>> GetPickpointsListAsync()
         {

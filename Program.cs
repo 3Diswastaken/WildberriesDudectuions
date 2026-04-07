@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using Microsoft.IdentityModel.Tokens;
+using Spectre.Console;
 using WildberriesDeductions.Wildberries;
 using WildberriesDeductions.Wildberries.Exceptions;
 using WildberriesDeductions.Wildberries.Models;
@@ -13,24 +14,40 @@ namespace WildberriesDeductions
             HttpClient httpClient = new();
             WbRequestService wbService = new(httpClient);
             TokenStorage storage = new(); // для хранения токена в файле, чтобы не логиниться при каждом запуске
-            AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig);
+            AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig, configs.switchConfig);
             Client client = new(authService, wbService, configs);
 
             List<string> errorLog = new();
 
-            if (!authService.IsTokenValid())
-            {
-                long phone = SpectreConsole.AskForPhone();
-                await authService.TryLoginAsync(phone);
+            bool isAuthorized = authService.IsTokenValid();
 
-                while (true)
+            if (!isAuthorized)
+            {
+                string step = "phone";
+                long phone = 0;
+                string tokenForValidate = string.Empty;
+
+
+                while (!isAuthorized)
                 {
-                    int code = SpectreConsole.AskForCode();
                     try
                     {
-                        await authService.TryValidateAsync(code);
-                        break;
+                        switch (step)
+                        {
+                            case "phone":
+                                phone = SpectreConsole.AskForPhone();
+                                tokenForValidate = await authService.LoginAsync(phone);
+                                step = "code";
+                                break;
+
+                            case "code":
+                                int code = SpectreConsole.AskForCode();
+                                await authService.ValidateAsync(code, tokenForValidate);
+                                isAuthorized = true;
+                                break;
+                        }
                     }
+
                     catch (ApiException ex)
                     {
                         AnsiConsole.MarkupLine($"[yellow]Ошибка WB:[/] {ex.Message}. Попробуйте еще раз.");
@@ -41,7 +58,7 @@ namespace WildberriesDeductions
                             return;
                         }
                     }
-                    catch (NetworkException) 
+                    catch (NetworkException)
                     {
                         AnsiConsole.MarkupLine("[red]Проблема с соединением.[/] Проверьте сеть и нажмите любую клавишу...");
                         Console.ReadKey();
@@ -50,7 +67,7 @@ namespace WildberriesDeductions
                     {
                         AnsiConsole.MarkupLine($"[red]Непредвиденная ошибка:[/] {ex.Message}");
                         Console.ReadKey();
-                        throw; 
+                        throw;
                     }
                 }
             }
@@ -77,7 +94,7 @@ namespace WildberriesDeductions
             {
                 try
                 {
-                    await client.SwitchAsync(pickpoint);
+                    await authService.GetPickpointToken(pickpoint);
                 }
                 catch (Exception ex)
                 {
