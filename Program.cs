@@ -94,7 +94,7 @@ namespace WildberriesDeductions
             {
                 try
                 {
-                    await authService.GetPickpointToken(pickpoint);
+                    await authService.UpdatePickpointToken(pickpoint);
                 }
                 catch (Exception ex)
                 {
