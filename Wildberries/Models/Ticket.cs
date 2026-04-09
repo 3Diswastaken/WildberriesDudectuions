@@ -14,6 +14,7 @@ namespace WildberriesDeductions.Wildberries.Models
         public string Reason { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty; // сообщение с которым был создан тикет
         public long Id { get; set; }
+        public long UserId { get; set; }
         public DateTimeOffset? CreateDate { get; set; }
         public DateTimeOffset? FinishDate { get; set; }
         public DateTimeOffset? OnHoldDate { get; set; }
@@ -27,5 +28,6 @@ namespace WildberriesDeductions.Wildberries.Models
         public DateTimeOffset? CreateDate { get; set; }
         public string FullName { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
+        public long UserId { get; set; }
     }
 }

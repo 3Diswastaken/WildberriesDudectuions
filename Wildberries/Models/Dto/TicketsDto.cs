@@ -22,6 +22,8 @@ namespace WildberriesDeductions.Wildberries.Models.Dto
         public long Id { get; set; }
         [JsonPropertyName("ticket_state_id")]
         public int State { get; set; }
+        [JsonPropertyName("user_id")]
+        public long UserId { get; set; }
         [JsonPropertyName("create_date")]
         public string CreateDateRaw { get; set; } = string.Empty;
         public DateTimeOffset? CreateDate => String.IsNullOrEmpty(CreateDateRaw) ? null : DateTimeOffset.Parse(CreateDateRaw).LocalDateTime;
@@ -39,6 +41,8 @@ namespace WildberriesDeductions.Wildberries.Models.Dto
         public DateTimeOffset? CreateDate => String.IsNullOrEmpty(CreateDateRaw) ? null : DateTimeOffset.Parse(CreateDateRaw).LocalDateTime;
         [JsonPropertyName("fio")]
         public string FullName { get; set; } = string.Empty;
+        [JsonPropertyName("user_id")]
+        public long UserId { get; set; }
         [JsonPropertyName("message")]
         public string Message { get; set; } = string.Empty;
     }

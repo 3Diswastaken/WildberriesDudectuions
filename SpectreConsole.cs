@@ -207,18 +207,27 @@ namespace WildberriesDeductions
         {
             AnsiConsole.Clear();
             AnsiConsole.MarkupLine($"[yellow]Тикет #{ticket.Id}[/]");
+            AnsiConsole.MarkupLine($"[green]Тип:[/] {ticket.TypeName}");
             AnsiConsole.MarkupLine($"[green]ПВЗ:[/] {ticket.PickpointName}");
-            AnsiConsole.MarkupLine($"[green]Причина:[/] {ticket.Reason}");
-            AnsiConsole.MarkupLine($"[green]Описание:[/] {ticket.Description}");
             AnsiConsole.MarkupLine($"[green]Дата создания:[/] {ticket.CreateDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "Нет данных"}");
             AnsiConsole.MarkupLine($"[green]Дата завершения:[/] {ticket.FinishDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "Нет данных"}");
-            AnsiConsole.MarkupLine($"[green]Дата удержания:[/] {ticket.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "Нет данных"}");
-            AnsiConsole.MarkupLine($"[green]Статус:[/] {ticket.State}");
-            AnsiConsole.MarkupLine($"[green]Тип:[/] {ticket.TypeName}");
+            AnsiConsole.MarkupLine("");
+            AnsiConsole.MarkupLine($"[green]Описание:[/] {ticket.Description}");
+            AnsiConsole.MarkupLine("");
+            AnsiConsole.MarkupLine("");
             AnsiConsole.MarkupLine($"[green]История изменений:[/]");
             foreach (var log in ticket.Logs)
             {
-                AnsiConsole.MarkupLine($"  [grey]{log.CreateDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")} - {log.FullName} - {log.Message}[/]");
+                if (log.UserId == ticket.UserId)
+                {
+                    AnsiConsole.MarkupLine($"  [blue]{log.CreateDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")} - {log.FullName} - [/][white]{log.Message}[/]");
+                    AnsiConsole.MarkupLine("");
+                }
+                 else
+                {
+                    AnsiConsole.MarkupLine($"  [purple]{log.CreateDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")} - {log.FullName} - [/][white]{log.Message}[/]");
+                    AnsiConsole.MarkupLine("");
+                }
             }
         }
 

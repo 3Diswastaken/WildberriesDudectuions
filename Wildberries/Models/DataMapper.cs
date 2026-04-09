@@ -79,6 +79,7 @@ namespace WildberriesDeductions.Wildberries.Models
             return new Ticket
             {
                 Id = raw.Id,
+                UserId = raw.UserId,
                 CreateDate = raw.CreateDate,
                 FinishDate = raw.FinishDate,
                 OnHoldDate = onHoldDate,
@@ -92,6 +93,7 @@ namespace WildberriesDeductions.Wildberries.Models
                 {
                     CreateDate = l.CreateDate,
                     FullName = l.FullName,
+                    UserId = l.UserId,
                     Message = l.Message
                 }).ToList()
             };
