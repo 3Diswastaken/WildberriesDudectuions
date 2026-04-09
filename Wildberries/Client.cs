@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using WildberriesDeductions.Wildberries.Models;
+using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions.Wildberries
 {

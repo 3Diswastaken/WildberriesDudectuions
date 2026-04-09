@@ -1,5 +1,6 @@
 ﻿using Spectre.Console;
 using WildberriesDeductions.Wildberries.Models;
+using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions
 {

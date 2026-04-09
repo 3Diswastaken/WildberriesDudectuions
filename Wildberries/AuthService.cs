@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using WildberriesDeductions.Wildberries.Models;
+using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions.Wildberries
 {

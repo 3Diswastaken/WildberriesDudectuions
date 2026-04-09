@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WildberriesDeductions.Wildberries.Models
+namespace WildberriesDeductions.Wildberries.Models.Dto
 {
     public class ValidateRoot
     {

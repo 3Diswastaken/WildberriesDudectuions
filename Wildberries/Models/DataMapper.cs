@@ -1,4 +1,6 @@
-﻿namespace WildberriesDeductions.Wildberries.Models
+﻿using WildberriesDeductions.Wildberries.Models.Dto;
+
+namespace WildberriesDeductions.Wildberries.Models
 {
     public static class DataMapper
     {
