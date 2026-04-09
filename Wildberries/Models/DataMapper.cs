@@ -65,22 +65,33 @@
             };
         }
 
-        public static DeductionGood ToDomain(this Ticket raw, string pickpointName)
+        public static Ticket ToDomain(this TicketDto raw, string pickpointName)
         {
+            var rawLogs = raw.Logs;
+
             DateTimeOffset? onHoldDate = null;
-            if (raw.Logs?.Any() == true && raw.Logs[^1].FullName.Trim() != "Руслан")
-                onHoldDate = raw.Logs[^1].CreateDate.Value.AddDays(2);
+            if (rawLogs?.Any() == true && rawLogs[^1].FullName.Trim() != "Руслан")
+                onHoldDate = rawLogs[^1].CreateDate.Value.AddDays(2);
 
-            return new DeductionGood
+
+            return new Ticket
             {
-
-                Shk = 0, 
-                DeductionPrice = 0,
+                Id = raw.Id,
+                CreateDate = raw.CreateDate,
+                FinishDate = raw.FinishDate,
                 OnHoldDate = onHoldDate,
                 PickpointName = pickpointName,
                 ShortPickpointName = pickpointName.ToShort(),
-                TicketId = raw.TicketId,
-                Reason = raw.Reason
+                Description = raw.Description,
+                State = raw.State,
+                Reason = raw.Reason,
+                TypeName = raw.TypeName,
+                Logs = rawLogs.Select(l => new TicketHistoryRecord
+                {
+                    CreateDate = l.CreateDate,
+                    FullName = l.FullName,
+                    Message = l.Message
+                }).ToList()
             };
         }
 

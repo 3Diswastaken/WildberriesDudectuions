@@ -67,9 +67,9 @@ namespace WildberriesDeductions.Wildberries
             return result;
         }
 
-        public async Task<List<DeductionGood>> GetTicketsAsync(Pickpoint pickpoint)
+        public async Task<List<Ticket>> GetTicketsAsync(Pickpoint pickpoint)
         {
-            List<DeductionGood> result = new();
+            List<Ticket> result = new();
 
             var rawData = await wbService.GetGoods<WbTicketsResponse>(configs.ticketsConfig, pickpoint);
             Debug.WriteLine($"Запрос тикетов на {pickpoint.Name} выполнен.");
@@ -78,7 +78,8 @@ namespace WildberriesDeductions.Wildberries
             {
                 var mappedItem = item.ToDomain(pickpoint.Name);
 
-                if (item.State != 3 && item.TicketId != 0 && mappedItem.OnHoldDate != null)
+                // todo: грамотно объединить доменную модель и дто
+                if (item.State != 3 && item.Id != 0 && mappedItem.OnHoldDate != null && !item.Logs.Last().Message.Contains("Уже взяли ваше обращение в работу"))
                     result.Add(mappedItem);
             }
 

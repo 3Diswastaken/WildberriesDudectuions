@@ -99,14 +99,16 @@ namespace WildberriesDeductions
                 catch (Exception ex)
                 {
                     errorLog.Add($"Ошибка при создании токена для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
-                };
+                }
+                ;
             }
 
             while (true)
             {
                 var selectedPickpoints = SpectreConsole.SelectPickpoints(allPickpoints);
 
-                List<DeductionGood> deductionGoods = new();
+                List<DeductionGood> deductions = new();
+                List<Ticket> tickets = new();
                 await AnsiConsole.Status().StartAsync("Получение данных...", async ctx =>
                 {
                     foreach (var pickpoint in selectedPickpoints)
@@ -114,20 +116,20 @@ namespace WildberriesDeductions
                         try
                         {
                             ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.GetHandingGoodsAsync(pickpoint));
+                            deductions.AddRange(await client.GetHandingGoodsAsync(pickpoint));
 
                             ctx.Status($"Получение брака для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.GetDefectGoodsAsync(pickpoint));
+                            deductions.AddRange(await client.GetDefectGoodsAsync(pickpoint));
 
                             ctx.Status($"Получение подмен для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.GetReplaceGoodsAsync(pickpoint));
+                            deductions.AddRange(await client.GetReplaceGoodsAsync(pickpoint));
 
                             ctx.Status($"Получение тикетов для {pickpoint.Name}...");
-                            deductionGoods.AddRange(await client.GetTicketsAsync(pickpoint));
+                            tickets.AddRange(await client.GetTicketsAsync(pickpoint));
                         }
                         catch (Exception ex)
                         {
-                            errorLog.Add($"Ошибка получения данных для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
+                            errorLog.Add($"Ошибка получения данных для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message} Полноый стек: {ex.StackTrace}");
                         }
                     }
                 });
@@ -135,24 +137,32 @@ namespace WildberriesDeductions
 
                 while (true)
                 {
-                    var deduction = SpectreConsole.SelectDeduction(deductionGoods, errorLog);
-                    if (deduction == null) // проверка на назад
+                    var selectedItem = SpectreConsole.SelectDeduction(deductions, tickets, errorLog);
+                    if (selectedItem == null) // проверка на назад
                         break;
-                    else if (deduction.Details == null) // если детали уже были загружены, то не грузим их снова
+
+                    if (selectedItem is DeductionGood deduction)
                     {
-                        var deductionDetails = await AnsiConsole.Status()
-                            .Spinner(Spinner.Known.Dots)
-                            .StartAsync("Загрузка...", async ctx =>
-                            {
-                                var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.PickpointName);
+                        if (deduction.Details == null) // если детали уже были загружены, то не грузим их снова
+                        {
+                            var deductionDetails = await AnsiConsole.Status()
+                                .Spinner(Spinner.Known.Dots)
+                                .StartAsync("Загрузка...", async ctx =>
+                                {
+                                    var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.PickpointName);
 
-                                ctx.Status($"Получение данных по ШК {deduction.Shk}...");
-                                var details = await client.FindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
+                                    ctx.Status($"Получение данных по ШК {deduction.Shk}...");
+                                    var details = await client.FindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
 
-                                return deduction.ToEnrich(details); // дополняем удержание данными по ШК
-                            });
+                                    return deduction.ToEnrich(details); // дополняем удержание данными по ШК
+                                });
+                        }
+                        SpectreConsole.ShowDeductionScreen(deduction);
                     }
-                    SpectreConsole.ShowDeductionScreen(deduction);
+                    if (selectedItem is Ticket ticket)
+                    {
+                        SpectreConsole.ShowTicketDetails(ticket);
+                    }
                 }
             }
         }
