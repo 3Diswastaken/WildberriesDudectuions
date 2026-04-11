@@ -13,7 +13,8 @@ namespace WildberriesDeductions.Wildberries.Models
         public decimal DeductionPrice { get; set; }
         public DateTimeOffset? OnHoldDate { get; set; }
 
-        public string Pickpoint { get; set; } = string.Empty;
+        public string PickpointName { get; set; } = string.Empty;
+        public string ShortPickpointName = string.Empty;
         public long TicketId { get; set; }
         public string Reason { get; set; } = string.Empty;
 

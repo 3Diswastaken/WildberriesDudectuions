@@ -1,5 +1,7 @@
-﻿using Spectre.Console;
+﻿using Microsoft.IdentityModel.Tokens;
+using Spectre.Console;
 using WildberriesDeductions.Wildberries;
+using WildberriesDeductions.Wildberries.Exceptions;
 using WildberriesDeductions.Wildberries.Models;
 
 namespace WildberriesDeductions
@@ -12,30 +14,93 @@ namespace WildberriesDeductions
             HttpClient httpClient = new();
             WbRequestService wbService = new(httpClient);
             TokenStorage storage = new(); // для хранения токена в файле, чтобы не логиниться при каждом запуске
-            AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig);
+            AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig, configs.switchConfig);
             Client client = new(authService, wbService, configs);
 
+            List<string> errorLog = new();
 
-            if (!authService.IsTokenValid())
+            bool isAuthorized = authService.IsTokenValid();
+
+            if (!isAuthorized)
             {
-                long phone = SpectreConsole.AskForPhone();
-                await authService.TryLoginAsync(phone);
+                string step = "phone";
+                long phone = 0;
+                string tokenForValidate = string.Empty;
 
-                while (true)
+
+                while (!isAuthorized)
                 {
-                    int code = SpectreConsole.AskForCode();
-                    if (await authService.TryValidateAsync(code))
-                        break;
-                    else
-                        AnsiConsole.MarkupLine("[red]Неверный код. Попробуйте снова.[/]");
+                    try
+                    {
+                        switch (step)
+                        {
+                            case "phone":
+                                phone = SpectreConsole.AskForPhone();
+                                tokenForValidate = await authService.LoginAsync(phone);
+                                step = "code";
+                                break;
+
+                            case "code":
+                                int code = SpectreConsole.AskForCode();
+                                await authService.ValidateCodeAndSaveTokenAsync(code, tokenForValidate);
+                                isAuthorized = true;
+                                break;
+                        }
+                    }
+
+                    catch (ApiException ex)
+                    {
+                        AnsiConsole.MarkupLine($"[yellow]Ошибка WB:[/] {ex.Message}. Попробуйте еще раз.");
+                        if (ex.Message.Contains("5 минут"))
+                        {
+                            AnsiConsole.MarkupLine("[grey]Приложение будет закрыто. Попробуйте зайти позже.[/]");
+                            Console.ReadKey();
+                            return;
+                        }
+                    }
+                    catch (NetworkException)
+                    {
+                        AnsiConsole.MarkupLine("[red]Проблема с соединением.[/] Проверьте сеть и нажмите любую клавишу...");
+                        Console.ReadKey();
+                    }
+                    catch (Exception ex)
+                    {
+                        AnsiConsole.MarkupLine($"[red]Непредвиденная ошибка:[/] {ex.Message}");
+                        Console.ReadKey();
+                        throw;
+                    }
                 }
             }
 
-            var allPickpoints = await client.TryGetPickpointsListAsync();
+            var allPickpoints = new List<Pickpoint>();
+
+            try
+            {
+                allPickpoints = await client.GetPickpointsListAsync();
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.MarkupLine($"[red]Ошибка при получении списка пунктов выдачи! Описание ошибки: {ex.Message}[/]");
+                if (allPickpoints == null)
+                {
+                    AnsiConsole.MarkupLine("[grey]Приложение будет закрыто, так как без списка пунктов выдачи дальнейшая работа невозможна.[/]");
+                    Console.ReadKey();
+                    return;
+                }
+            }
 
             // заранее собираем токены (живут 24 часа) для всех пунктов выдачи, чтобы не делать это при каждом запросе данных
             foreach (var pickpoint in allPickpoints)
-                await client.TrySwitchAsync(pickpoint);
+            {
+                try
+                {
+                    pickpoint.Token = await authService.UpdatePickpointToken(pickpoint);
+                }
+                catch (Exception ex)
+                {
+                    errorLog.Add($"Ошибка при создании токена для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
+                };
+            }
 
             while (true)
             {
@@ -46,24 +111,31 @@ namespace WildberriesDeductions
                 {
                     foreach (var pickpoint in selectedPickpoints)
                     {
-                        ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
-                        deductionGoods.AddRange(await client.TryGetHandingGoodsAsync(pickpoint));
+                        try
+                        {
+                            ctx.Status($"Получение зависших шк для {pickpoint.Name}...");
+                            deductionGoods.AddRange(await client.GetHandingGoodsAsync(pickpoint));
 
-                        ctx.Status($"Получение брака для {pickpoint.Name}...");
-                        deductionGoods.AddRange(await client.TryGetDefectGoodsAsync(pickpoint));
+                            ctx.Status($"Получение брака для {pickpoint.Name}...");
+                            deductionGoods.AddRange(await client.GetDefectGoodsAsync(pickpoint));
 
-                        ctx.Status($"Получение подмен для {pickpoint.Name}...");
-                        deductionGoods.AddRange(await client.TryGetReplaceGoodsAsync(pickpoint));
+                            ctx.Status($"Получение подмен для {pickpoint.Name}...");
+                            deductionGoods.AddRange(await client.GetReplaceGoodsAsync(pickpoint));
 
-                        ctx.Status($"Получение тикетов для {pickpoint.Name}...");
-                        deductionGoods.AddRange(await client.TryGetTicketsAsync(pickpoint));
+                            ctx.Status($"Получение тикетов для {pickpoint.Name}...");
+                            deductionGoods.AddRange(await client.GetTicketsAsync(pickpoint));
+                        }
+                        catch (Exception ex)
+                        {
+                            errorLog.Add($"Ошибка получения данных для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
+                        }
                     }
                 });
 
 
                 while (true)
                 {
-                    var deduction = SpectreConsole.SelectDeduction(deductionGoods);
+                    var deduction = SpectreConsole.SelectDeduction(deductionGoods, errorLog);
                     if (deduction == null) // проверка на назад
                         break;
                     else if (deduction.Details == null) // если детали уже были загружены, то не грузим их снова
@@ -72,10 +144,10 @@ namespace WildberriesDeductions
                             .Spinner(Spinner.Known.Dots)
                             .StartAsync("Загрузка...", async ctx =>
                             {
-                                var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.Pickpoint);
+                                var deductionPickpoint = selectedPickpoints.FirstOrDefault(p => p.Name == deduction.PickpointName);
 
                                 ctx.Status($"Получение данных по ШК {deduction.Shk}...");
-                                var details = await client.TryFindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
+                                var details = await client.FindByShkAsync(deduction.Shk.ToString(), deductionPickpoint);
 
                                 return deduction.ToEnrich(details); // дополняем удержание данными по ШК
                             });
@@ -85,4 +157,4 @@ namespace WildberriesDeductions
             }
         }
     }
-} 
+}

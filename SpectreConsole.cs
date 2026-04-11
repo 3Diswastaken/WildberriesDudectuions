@@ -62,9 +62,18 @@ namespace WildberriesDeductions
             return selectedPickpoints;
         }
 
-        public static DeductionGood? SelectDeduction(List<DeductionGood> deductions)
+        public static DeductionGood? SelectDeduction(List<DeductionGood> deductions, List<string> errorLog)
         {
             AnsiConsole.Clear();
+
+            if (errorLog.Any())
+            {
+                foreach (var error in errorLog)
+                {
+                    AnsiConsole.MarkupLine($"[red]{error}[/]");
+                }
+                AnsiConsole.WriteLine("");
+            }
 
             var prompt = new SelectionPrompt<object>()
                 .Title("[yellow]Выберите товар для деталей или вернитесь назад:[/]")
@@ -78,9 +87,9 @@ namespace WildberriesDeductions
                 if (item is DeductionGood d)
                 {
                     string date = d.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "Нет данных";
-                    string pp = d.Pickpoint.Length > 40 ? d.Pickpoint[..37] + "..." : d.Pickpoint;
+                    string pp = d.ShortPickpointName.Length > 20 ? d.ShortPickpointName[..17] + "..." : d.ShortPickpointName;
                     string price = d.DeductionPrice.ToString() + " руб.";
-                    return $" {date}  {d.Reason, -12}  {pp, -40}  {price, -12}  {d.Shk, -15} ";
+                    return $" {date}  {d.Reason,-12}  {pp,-20}  {price,-12}  {d.Shk,-15} ";
                 }
 
                 return item.ToString() ?? "Неизвестно";
@@ -88,7 +97,7 @@ namespace WildberriesDeductions
 
             var selected = AnsiConsole.Prompt(prompt);
             if (selected is string)
-                return null; 
+                return null;
 
             return selected as DeductionGood;
         }
@@ -99,18 +108,18 @@ namespace WildberriesDeductions
 
             var table = new Table();
             table.Title("Детали удержания");
-            table.AddColumns("Время отметки о браке", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК", "Ячейка");
+            table.AddColumns("ПВЗ", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК", "Ячейка");
             table.Width = AnsiConsole.Console.Profile.Width;
 
             string price = deduction.DeductionPrice.ToString() + " руб.";
             string shk = deduction.Shk.ToString();
             string date = deduction.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss");
-            string defectMarkDate = deduction.Details.DefectMark.FirstOrDefault()?.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "-";
+            string pickpoint = deduction.PickpointName;
             string cell = deduction.Details.Cell.ToString();
 
 
             table.AddRow(
-                defectMarkDate,
+                pickpoint,
                 date,
                 deduction.Reason,
                 price,
@@ -119,6 +128,7 @@ namespace WildberriesDeductions
             );
 
             var statusHistoryTable = new Table();
+            statusHistoryTable.Title("История статусов товара");
             statusHistoryTable.Width = AnsiConsole.Console.Profile.Width;
             var statusHistory = deduction.Details.StatusHistory.ToList();
             statusHistoryTable.AddColumns("Статус", "Время", "Сотрудник");
@@ -130,18 +140,32 @@ namespace WildberriesDeductions
                     status.EmployeeFullName
                     );
             }
+
+            var defectMarkTable = new Table();
+            defectMarkTable.Title("Данные об отметке о браке");
+            defectMarkTable.Width = AnsiConsole.Console.Profile.Width;
+            var defectMark = deduction.Details.DefectMark.FirstOrDefault();
+            defectMarkTable.AddColumns("Дата отметки о браке", "Комментарий", "Фотографии");
+            var defectMarkPhotos = defectMark?.Photos ?? new List<string>();
+            string? photosUrl = string.Join("\n", defectMarkPhotos.Select((url, i) => $"{url}"));
+
+            defectMarkTable.AddRow(defectMark?.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "-", defectMark?.Comment ?? "-", photosUrl ?? "-");
+
+
             AnsiConsole.Write(table);
+            AnsiConsole.Write(defectMarkTable);
             AnsiConsole.Write(statusHistoryTable);
         }
 
-        public enum DetailsAction {Back}
+        public enum DetailsAction { Back }
 
         public static DetailsAction ShowDetailsMenu()
         {
             return AnsiConsole.Prompt(
                 new SelectionPrompt<DetailsAction>()
                     .Title("[grey]Выберите действие:[/]")
-                    .UseConverter(a => a switch {
+                    .UseConverter(a => a switch
+                    {
                         DetailsAction.Back => "<- Вернуться к списку"
                     })
                     .AddChoices(DetailsAction.Back)

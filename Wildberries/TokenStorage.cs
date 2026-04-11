@@ -22,11 +22,11 @@
             File.WriteAllText(_filePath, token);
         }
 
-        public string Load()
+        public string LoadAccessToken()
         {
             if (!File.Exists(_filePath))
             {
-                Save(string.Empty);
+                Save(string.Empty); // Создаем файл, если его нет, чтобы избежать ошибок при чтении в будущем
                 return string.Empty;
             }
             return File.ReadAllText(_filePath);
