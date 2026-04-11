@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WildberriesDeductions.Wildberries.Models
+namespace WildberriesDeductions.Wildberries.Models.Dto
 {
     public class PickpointsListRoot
     {

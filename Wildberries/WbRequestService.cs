@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using WildberriesDeductions.Wildberries.Models;
 using WildberriesDeductions.Wildberries.Exceptions;
+using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions.Wildberries
 {

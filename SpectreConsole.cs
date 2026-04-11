@@ -1,5 +1,6 @@
 ﻿using Spectre.Console;
 using WildberriesDeductions.Wildberries.Models;
+using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions
 {
@@ -62,10 +63,14 @@ namespace WildberriesDeductions
             return selectedPickpoints;
         }
 
-        public static DeductionGood? SelectDeduction(List<DeductionGood> deductions, List<string> errorLog)
+        public static object? SelectDeduction(List<DeductionGood> deductions, List<Ticket> tickets, List<string> errorLog)
         {
             AnsiConsole.Clear();
 
+            List<object> combinedList = new List<object>();
+            combinedList.AddRange(deductions);
+            combinedList.AddRange(tickets);
+            
             if (errorLog.Any())
             {
                 foreach (var error in errorLog)
@@ -80,7 +85,7 @@ namespace WildberriesDeductions
                 .PageSize(30)
                 .MoreChoicesText("[grey](Листайте вниз, чтобы увидеть все товары)[/]")
                 .AddChoices("<- Назад (К выбору ПВЗ)")
-                .AddChoices(deductions.OrderBy(g => g.OnHoldDate).Cast<object>());
+                .AddChoices(combinedList.OrderBy(x => (x as dynamic).OnHoldDate));
 
             prompt.UseConverter(item =>
             {
@@ -91,15 +96,25 @@ namespace WildberriesDeductions
                     string price = d.DeductionPrice.ToString() + " руб.";
                     return $" {date}  {d.Reason,-12}  {pp,-20}  {price,-12}  {d.Shk,-15} ";
                 }
+                if (item is Ticket t)
+                {
+                    string date = t.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "Нет данных";
+                    string id = $"Тикет #{t.Id.ToString()}";
+                    string pp = t.ShortPickpointName.Length > 20 ? t.ShortPickpointName[..17] + "..." : t.ShortPickpointName;
+                    string price = "0 руб.";
+                    return $" {date}  {t.Reason,-12}  {pp,-20} {price, -12}  {id, -8}";
+                }
 
                 return item.ToString() ?? "Неизвестно";
             });
 
             var selected = AnsiConsole.Prompt(prompt);
-            if (selected is string)
-                return null;
 
-            return selected as DeductionGood;
+            if (selected is DeductionGood)
+                return selected as DeductionGood;
+            else if (selected is Ticket)
+                return selected as Ticket;
+            else  return null;
         }
 
         public static void PrintDeductionDetails(DeductionGood deduction)
@@ -159,7 +174,7 @@ namespace WildberriesDeductions
 
         public enum DetailsAction { Back }
 
-        public static DetailsAction ShowDetailsMenu()
+        public static DetailsAction ShowNavigationMenu()
         {
             return AnsiConsole.Prompt(
                 new SelectionPrompt<DetailsAction>()
@@ -178,8 +193,52 @@ namespace WildberriesDeductions
             while (stayOnScreen)
             {
                 PrintDeductionDetails(deduction);
-                var action = ShowDetailsMenu();
+                var action = ShowNavigationMenu();
 
+                if (action == DetailsAction.Back)
+                {
+                    stayOnScreen = false; // Выходим из цикла, метод завершится
+                }
+            }
+        }
+
+
+        private static void PrintTicketDetails(Ticket ticket)
+        {
+            AnsiConsole.Clear();
+            AnsiConsole.MarkupLine($"[yellow]Тикет #{ticket.Id}[/]");
+            AnsiConsole.MarkupLine($"[green]Тип:[/] {ticket.TypeName}");
+            AnsiConsole.MarkupLine($"[green]ПВЗ:[/] {ticket.PickpointName}");
+            AnsiConsole.MarkupLine($"[green]Дата создания:[/] {ticket.CreateDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "Нет данных"}");
+            AnsiConsole.MarkupLine($"[green]Дата завершения:[/] {ticket.FinishDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "Нет данных"}");
+            AnsiConsole.MarkupLine("");
+            AnsiConsole.MarkupLine($"[green]Описание:[/] {ticket.Description}");
+            AnsiConsole.MarkupLine("");
+            AnsiConsole.MarkupLine("");
+            AnsiConsole.MarkupLine($"[green]История изменений:[/]");
+            foreach (var log in ticket.Logs)
+            {
+                if (log.UserId == ticket.UserId)
+                {
+                    AnsiConsole.MarkupLine($"  [blue]{log.CreateDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")} - {log.FullName} - [/][white]{log.Message}[/]");
+                    AnsiConsole.MarkupLine("");
+                }
+                 else
+                {
+                    AnsiConsole.MarkupLine($"  [purple]{log.CreateDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")} - {log.FullName} - [/][white]{log.Message}[/]");
+                    AnsiConsole.MarkupLine("");
+                }
+            }
+        }
+
+        public static void ShowTicketDetails(Ticket ticket)
+        {
+            bool stayOnScreen = true;
+            while (stayOnScreen)
+            {
+                PrintTicketDetails(ticket);
+
+                var action = ShowNavigationMenu();
                 if (action == DetailsAction.Back)
                 {
                     stayOnScreen = false; // Выходим из цикла, метод завершится

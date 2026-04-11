@@ -19,7 +19,6 @@ namespace WildberriesDeductions.Wildberries.Models
         public string Reason { get; set; } = string.Empty;
 
         public GoodDetails? Details { get; set; } = null;
-
     }
 
     public class GoodDetails
