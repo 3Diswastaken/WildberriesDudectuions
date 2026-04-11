@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-
+using WildberriesDeductions.IPEye.Models;
+using WildberriesDeductions.Wildberries.Models;
 namespace WildberriesDeductions.IPEye
 {
     public class IPEyeRequestService
@@ -37,36 +38,50 @@ namespace WildberriesDeductions.IPEye
             if (headers != null)
                 foreach (var header in headers) request.Headers.TryAddWithoutValidation(header.Key, header.Value);
 
+            HttpResponseMessage response;
             try
             {
-                var response = await _httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-
-                if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                {
-                    string errorJson = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine(errorJson);
-                }
-
-                string responseJson = await response.Content.ReadAsStringAsync();
-
-                return JsonSerializer.Deserialize<T>(responseJson);
-            }
-            catch (HttpRequestException ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                throw;
-            }
-            catch (JsonException ex)
-            {
-                Debug.WriteLine($"ошибка json ответа от сервера: ", ex);
-                throw;
+                // ловим только сетевые ошибки
+                response = await _httpClient.SendAsync(request);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"хуйня какая-то: ", ex);
+                Debug.WriteLine($"[Network Error] {url}: {ex.Message}");
+                throw new Exception("Ошибка соединения с сервером. Проверьте доступ к интернету.", ex);
+            }
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            // todo: понять тело ошибки и парсить ошибку
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine($"[API Error] {url} | Status: {response.StatusCode} | Body: {responseBody}");
+
+                throw new Exception($"Сервер ответил ошибкой {response.StatusCode}: {responseBody}");
+            }
+
+            try
+            {
+                // Десериализуем успешный ответ
+                return JsonSerializer.Deserialize<T>(responseBody)
+                       ?? throw new Exception("Сервер вернул пустой ответ.");
+            }
+            catch (JsonException ex)
+            {
+                Debug.WriteLine($"[JSON Error] Ошибка парсинга успешного ответа: {ex.Message}");
                 throw;
             }
+
+            
+        }
+        public async Task <LoginDto> Login (RequestConfig requestConfig, string login, string password)
+        {
+            var payload = new Dictionary<string, object>(requestConfig.Payload)
+            {
+                ["login"] = login,
+                ["pass"] = password
+            };
+            return await SendRequest<LoginDto>(requestConfig.Url, requestConfig.Method, payload, requestConfig.Headers);
         }
     }
 }

@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="IPEye\Configs\" />
-    <Folder Include="IPEye\Models\" />
     <Folder Include="Wildberries\etc\" />
   </ItemGroup>
 
