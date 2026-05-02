@@ -75,8 +75,8 @@ namespace WildberriesDeductions
             {
                 foreach (var error in errorLog)
                 {
-                    AnsiConsole.MarkupLine($"[red]{error}[/]");
-                }
+                    AnsiConsole.MarkupLineInterpolated($"[red]{error}[/]");
+                }   
                 AnsiConsole.WriteLine("");
             }
 
