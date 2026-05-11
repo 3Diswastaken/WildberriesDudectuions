@@ -11,12 +11,25 @@ namespace WildberriesDeductions
     {
         static async Task Main(string[] args)
         {
-            var configs = Factory.LoadConfigs(); // конфиги для всех запросов (url, payload, method, headers), хранятся в json файлах
+            string baseDir = AppContext.BaseDirectory;
+
+            // Создаем лоадеры
+            var wbLoader = new ConfigLoader(Path.Combine(baseDir, "Configs", "WB"));
+            var ipEyeLoader = new ConfigLoader(Path.Combine(baseDir, "Configs", "IPEye"));
+
+            // Получаем полные наборы конфигов
+            Dictionary<string, RequestConfig> wbApi = wbLoader.LoadAll();
+            Dictionary<string, RequestConfig> ipEyeApi = ipEyeLoader.LoadAll();
+
+            /*Использование:
+            var loginUrl = wbApi["login"].Url;*/
+
+
             HttpClient httpClient = new();
             WbRequestService wbService = new(httpClient);
             TokenStorage storage = new(); // для хранения токена в файле, чтобы не логиниться при каждом запуске
-            AuthService authService = new(storage, wbService, configs.loginConfig, configs.validateConfig, configs.switchConfig);
-            Client client = new(authService, wbService, configs);
+            AuthService authService = new(storage, wbService, wbApi["login"], wbApi["validate"], wbApi["switch"]);
+            Client client = new(authService, wbService, wbApi);
 
             List<string> errorLog = new();
 

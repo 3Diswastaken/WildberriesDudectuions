@@ -5,15 +5,13 @@ using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions.Wildberries
 {
-    public class Client(AuthService authService, WbRequestService wbService, AllConfigs configs)
+    public class Client(AuthService authService, WbRequestService wbService, Dictionary<string, RequestConfig> configs)
     {
-        
-
         public async Task<List<Pickpoint>> GetPickpointsListAsync()
         {
             string _token = authService.Load();
 
-            var result = await wbService.Pickpoints(configs.pickpointsListConfig, _token);
+            var result = await wbService.Pickpoints(configs["pickpoints"], _token);
             Debug.WriteLine($"Запрос pickpoints выполенен");
 
             return result.Pickpoints;
@@ -23,7 +21,7 @@ namespace WildberriesDeductions.Wildberries
         {
             List<DeductionGood> result = new();
 
-            var rawData = await wbService.GetGoods<DefectGoodsRoot>(configs.defectGoodsConfig, pickpoint);
+            var rawData = await wbService.GetGoods<DefectGoodsRoot>(configs["defect-goods"], pickpoint);
             Debug.WriteLine($"Запрос браков на {pickpoint.Name} выполнен.");
             if (rawData.Goods == null)
                 return result;
@@ -41,7 +39,7 @@ namespace WildberriesDeductions.Wildberries
         {
             List<DeductionGood> result = new();
 
-            var rawData = await wbService.GetGoods<ReplaceGoodsRoot>(configs.replaceGoodsConfig, pickpoint);
+            var rawData = await wbService.GetGoods<ReplaceGoodsRoot>(configs["replace-goods"], pickpoint);
             Debug.WriteLine($"Запрос подмен на {pickpoint.Name} выполнен.");
             if (rawData.Goods == null) return result;
             foreach (var item in rawData.Goods)
@@ -56,7 +54,7 @@ namespace WildberriesDeductions.Wildberries
         {
             List<DeductionGood> result = new();
 
-            var rawData = await wbService.GetGoods<HandingGoodsRoot>(configs.handingGoodsConfig, pickpoint);
+            var rawData = await wbService.GetGoods<HandingGoodsRoot>(configs["handing-goods"], pickpoint);
             Debug.WriteLine($"Запрос зависших шк на {pickpoint.Name} выполнен.");
             if (rawData.data.Goods == null) return result;
             foreach (var item in rawData.data.Goods)
@@ -72,7 +70,7 @@ namespace WildberriesDeductions.Wildberries
         {
             List<Ticket> result = new();
 
-            var rawData = await wbService.GetGoods<WbTicketsResponse>(configs.ticketsConfig, pickpoint);
+            var rawData = await wbService.GetGoods<WbTicketsResponse>(configs["tickets"], pickpoint);
             Debug.WriteLine($"Запрос тикетов на {pickpoint.Name} выполнен.");
 
             foreach (var item in rawData.Data)
@@ -90,7 +88,7 @@ namespace WildberriesDeductions.Wildberries
 
         public async Task<WbGoodSearchEntry> FindByShkAsync(string shk, Pickpoint pickpoint)
         {
-            var result = await wbService.FindByShk(configs.findByShkConfig, pickpoint, shk);
+            var result = await wbService.FindByShk(configs["find-by-shk"], pickpoint, shk);
             var details = result?.Data?.FirstOrDefault();
             Debug.WriteLine($"Запрос поиска шк на {pickpoint.Name} выполнен.");
 
