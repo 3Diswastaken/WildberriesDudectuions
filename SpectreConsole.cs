@@ -102,7 +102,7 @@ namespace WildberriesDeductions
                     string id = $"Тикет #{t.Id.ToString()}";
                     string pp = t.ShortPickpointName.Length > 20 ? t.ShortPickpointName[..17] + "..." : t.ShortPickpointName;
                     string price = "0 руб.";
-                    return $" {date}  {t.Reason,-12}  {pp,-20} {price, -12}  {id, -8}";
+                    return $" {date}  {t.Reason,-12}  {pp,-20}  {price, -12}  {id, -8}";
                 }
 
                 return item.ToString() ?? "Неизвестно";
