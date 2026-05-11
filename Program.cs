@@ -14,15 +14,12 @@ namespace WildberriesDeductions
             string baseDir = AppContext.BaseDirectory;
 
             // Создаем лоадеры
-            var wbLoader = new ConfigLoader(Path.Combine(baseDir, "Configs", "WB"));
-            var ipEyeLoader = new ConfigLoader(Path.Combine(baseDir, "Configs", "IPEye"));
+            var wbLoader = new ConfigLoader(Path.Combine(baseDir, "Wildberries", "Configs"));
+            var ipEyeLoader = new ConfigLoader(Path.Combine(baseDir, "IPEye", "Configs"));
 
             // Получаем полные наборы конфигов
             Dictionary<string, RequestConfig> wbApi = wbLoader.LoadAll();
             Dictionary<string, RequestConfig> ipEyeApi = ipEyeLoader.LoadAll();
-
-            /*Использование:
-            var loginUrl = wbApi["login"].Url;*/
 
 
             HttpClient httpClient = new();
