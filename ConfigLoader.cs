@@ -22,6 +22,20 @@ namespace WildberriesDeductions
 
             if (!Directory.Exists(_configDirectory))
                 Directory.CreateDirectory(_configDirectory);
+
+            try
+            {
+                _commonHeaders = Load(_commonHeadersFileName);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка загрузки файла с общими заголовками: {ex.Message}");
+            }
+            
         }
 
         // Загружает ОДИН файл и превращает его в RequestConfig
@@ -29,31 +43,25 @@ namespace WildberriesDeductions
         {
             string fullPath = Path.Combine(_configDirectory, fileName);
             if (!File.Exists(fullPath))
-                throw new FileNotFoundException($"Файл {fileName} не найден");
+                throw new FileNotFoundException($"Файл {fullPath} не найден");
 
             var json = File.ReadAllText(fullPath);
             var result = JsonSerializer.Deserialize<RequestConfig>(json);
 
-            return result ?? throw new Exception($"Ошибка десериализации {fileName}");
-        }
-
-        // Загружает общие заголовки один раз
-        private RequestConfig GetCommonHeaders()
-        {
-            return _commonHeaders ??= Load(_commonHeadersFileName);
+            return result ?? throw new Exception($"Ошибка десериализации {fullPath}");
         }
 
         // Метод для загрузки конкретного конфига (например, "login.json")
         public RequestConfig LoadRequest(string fileName)
-        {
-            var common = GetCommonHeaders();
+        { 
             var config = Load(fileName);
 
-            config.ApplyCommonHeaders(common.Headers);
+            if (_commonHeaders != null)
+            config.ApplyCommonHeadersReq(_commonHeaders);
+
             return config;
         }
 
-        // Метод, который ты хотел: загрузить ВСЁ из папки в словарь
         public Dictionary<string, RequestConfig> LoadAll()
         {
             var result = new Dictionary<string, RequestConfig>();
@@ -62,9 +70,10 @@ namespace WildberriesDeductions
             foreach (var file in files)
             {
                 var fileName = Path.GetFileName(file);
+                var fileFullPath = Path.Combine(_configDirectory, fileName);
 
                 // Пропускаем общие заголовки
-                if (fileName.Equals(_commonHeadersFileName, StringComparison.OrdinalIgnoreCase))
+                if (fileName.Equals(_commonHeadersFileName))
                     continue;
 
                 try
@@ -74,7 +83,7 @@ namespace WildberriesDeductions
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Пропущен файл {fileName}: {ex.Message}");
+                    Debug.WriteLine($"Пропущен файл {fileFullPath}: {ex.Message}");
                 }
             }
             return result;

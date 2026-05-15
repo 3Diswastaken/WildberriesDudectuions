@@ -78,7 +78,7 @@ namespace WildberriesDeductions.Wildberries
                 var mappedItem = item.ToDomain(pickpoint.Name);
 
                 // todo: грамотно объединить доменную модель и дто
-                if (item.State != 3 && item.Id != 0 && mappedItem.OnHoldDate != null /*&& !item.Logs.Last().Message.Contains("Уже взяли ваше обращение в работу")*/)
+                if (item.State != 3 && item.Id != 0 && mappedItem.OnHoldDate != null && !item.Logs.Last().Message.Contains("Уже взяли ваше обращение в работу"))
                     result.Add(mappedItem);
             }
 

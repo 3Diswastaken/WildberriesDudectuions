@@ -7,6 +7,15 @@
         public Dictionary<string, string> Headers { get; set; } = new();
         public Dictionary<string, object> Payload { get; set; } = new();
 
+        public void ApplyCommonHeadersReq(RequestConfig commonHeaders)
+        {
+            foreach (var header in commonHeaders.Headers) {
+                if (!Headers.ContainsKey(header.Key))
+                    Headers[header.Key] = header.Value;
+            }
+        }
+
+
         public void ApplyCommonHeaders(Dictionary<string, string> common)
         {
             foreach (var header in common)
