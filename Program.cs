@@ -21,7 +21,6 @@ namespace WildberriesDeductions
             Dictionary<string, RequestConfig> wbApi = wbLoader.LoadAll();
             Dictionary<string, RequestConfig> ipEyeApi = ipEyeLoader.LoadAll();
 
-
             HttpClient httpClient = new();
             WbRequestService wbService = new(httpClient);
             TokenStorage storage = new(); // для хранения токена в файле, чтобы не логиниться при каждом запуске
@@ -92,12 +91,13 @@ namespace WildberriesDeductions
             catch (Exception ex)
             {
                 AnsiConsole.MarkupLine($"[red]Ошибка при получении списка пунктов выдачи! Описание ошибки: {ex.Message}[/]");
-                if (allPickpoints == null)
-                {
-                    AnsiConsole.MarkupLine("[grey]Приложение будет закрыто, так как без списка пунктов выдачи дальнейшая работа невозможна.[/]");
-                    Console.ReadKey();
-                    return;
-                }
+            }
+
+            if (allPickpoints == null)
+            {
+                AnsiConsole.MarkupLine("[grey]Приложение будет закрыто, так как без списка пунктов выдачи дальнейшая работа невозможна.[/]");
+                Console.ReadKey();
+                return;
             }
 
             // заранее собираем токены (живут 24 часа) для всех пунктов выдачи, чтобы не делать это при каждом запросе данных
@@ -110,8 +110,7 @@ namespace WildberriesDeductions
                 catch (Exception ex)
                 {
                     errorLog.Add($"Ошибка при создании токена для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
-                }
-                ;
+                };
             }
 
             while (true)
@@ -140,7 +139,7 @@ namespace WildberriesDeductions
                         }
                         catch (Exception ex)
                         {
-                            errorLog.Add($"Ошибка получения данных для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message} Полноый стек: {ex.StackTrace}");
+                            errorLog.Add($"Ошибка получения данных для ПВЗ {pickpoint.Name}! Описание ошибки: {ex.Message}");
                         }
                     }
                 });
