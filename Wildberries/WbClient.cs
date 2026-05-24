@@ -5,7 +5,7 @@ using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions.Wildberries
 {
-    public class Client(AuthService authService, WbRequestService wbService, Dictionary<string, RequestConfig> configs)
+    public class WbClient(WBAuthService authService, WbRequestService wbService, Dictionary<string, RequestConfig> configs)
     {
         public async Task<List<Pickpoint>> GetPickpointsListAsync()
         {

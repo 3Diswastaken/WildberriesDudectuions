@@ -6,7 +6,7 @@ using WildberriesDeductions.Wildberries.Models.Dto;
 
 namespace WildberriesDeductions.Wildberries
 {
-    public class AuthService(TokenStorage tokenStorage, WbRequestService wbService, RequestConfig loginConfig, RequestConfig validateConfig, RequestConfig switchConfig)
+    public class WBAuthService(TokenStorage tokenStorage, WbRequestService wbService, RequestConfig loginConfig, RequestConfig validateConfig, RequestConfig switchConfig)
     {
         public bool IsTokenValid()
         {

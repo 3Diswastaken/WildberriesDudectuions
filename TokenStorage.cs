@@ -1,4 +1,4 @@
-﻿namespace WildberriesDeductions.Wildberries
+﻿namespace WildberriesDeductions
 {
     public class TokenStorage
     {
@@ -13,18 +13,20 @@
 
             _filePath = Path.Combine(_directoryPath, "tokens.txt");
         }
-        public void Save(string token)
+        public void Save(string token, string fileName = "tokens.txt")
         {
             if (!Directory.Exists(_directoryPath))
             {
                 Directory.CreateDirectory(_directoryPath);
             }
-            File.WriteAllText(_filePath, token);
+            string targetPath = Path.Combine(_directoryPath, fileName);
+            File.WriteAllText(targetPath, token);
         }
 
-        public string LoadAccessToken()
+        public string LoadAccessToken(string fileName = "tokens.txt")
         {
-            if (!File.Exists(_filePath))
+            string targetPath = Path.Combine (_directoryPath, fileName);
+            if (!File.Exists(targetPath))
             {
                 Save(string.Empty); // Создаем файл, если его нет, чтобы избежать ошибок при чтении в будущем
                 return string.Empty;

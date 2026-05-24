@@ -1,5 +1,8 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
+using System.Diagnostics;
+using System.Net;
+using WildberriesDeductions.IPEye;
 using WildberriesDeductions.Wildberries;
 using WildberriesDeductions.Wildberries.Exceptions;
 using WildberriesDeductions.Wildberries.Models;
@@ -21,11 +24,26 @@ namespace WildberriesDeductions
             Dictionary<string, RequestConfig> wbApi = wbLoader.LoadAll();
             Dictionary<string, RequestConfig> ipEyeApi = ipEyeLoader.LoadAll();
 
-            HttpClient httpClient = new();
-            WbRequestService wbService = new(httpClient);
+            HttpClient wbHttpClient = new();
+            WbRequestService wbService = new(wbHttpClient);
+
+            HttpClientHandler ipEyeHandler = new()
+            {
+                UseCookies = true,
+                CookieContainer = new CookieContainer() // Сюда HttpClient будет складывать куки
+            };
+            HttpClient ipEyeHttpClient = new(ipEyeHandler);
+            IPEyeRequestService ipEyeService = new(ipEyeHttpClient);
+
+            /*var login = await ipEyeService.Login(ipEyeApi["login"], "2024wbkaluga_", "Rhs_jdybr2024");
+            Console.WriteLine($"Danger: {login.Danger} Success: {login.Success}");
+
+            var devices = await ipEyeService.Devices(ipEyeApi["devices"]);
+            Console.WriteLine($"Всего устройств: {devices.RecordsTotal}");*/
+
             TokenStorage storage = new(); // для хранения токена в файле, чтобы не логиниться при каждом запуске
-            AuthService authService = new(storage, wbService, wbApi["login"], wbApi["validate"], wbApi["switch"]);
-            Client client = new(authService, wbService, wbApi);
+            WBAuthService authService = new(storage, wbService, wbApi["login"], wbApi["validate"], wbApi["switch"]);
+            WbClient client = new(authService, wbService, wbApi);
 
             List<string> errorLog = new();
 

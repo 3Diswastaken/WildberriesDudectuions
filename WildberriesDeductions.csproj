@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="IPEye\Configs\devices.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="IPEye\Configs\login.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
