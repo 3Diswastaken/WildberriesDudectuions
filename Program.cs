@@ -93,7 +93,7 @@ namespace WildberriesDeductions
                 AnsiConsole.MarkupLine($"[red]Ошибка при получении списка пунктов выдачи! Описание ошибки: {ex.Message}[/]");
             }
 
-            if (allPickpoints == null)
+            if (!allPickpoints.Any())
             {
                 AnsiConsole.MarkupLine("[grey]Приложение будет закрыто, так как без списка пунктов выдачи дальнейшая работа невозможна.[/]");
                 Console.ReadKey();
@@ -155,7 +155,9 @@ namespace WildberriesDeductions
                     {
                         if (deduction.Details == null) // если детали уже были загружены, то не грузим их снова
                         {
-                            var deductionDetails = await AnsiConsole.Status()
+                            try
+                            {
+                                var deductionDetails = await AnsiConsole.Status()
                                 .Spinner(Spinner.Known.Dots)
                                 .StartAsync("Загрузка...", async ctx =>
                                 {
@@ -166,8 +168,15 @@ namespace WildberriesDeductions
 
                                     return deduction.ToEnrich(details); // дополняем удержание данными по ШК
                                 });
+
+                                SpectreConsole.ShowDeductionScreen(deduction);
+                            } catch (Exception ex)
+                            {
+                                AnsiConsole.MarkupLine($"[red]Ошибка при загрузке деталей удержания! Описание ошибки: {ex.Message}[/]");
+                                Console.ReadKey();
+                            }
                         }
-                        SpectreConsole.ShowDeductionScreen(deduction);
+                        
                     }
                     if (selectedItem is Ticket ticket)
                     {
