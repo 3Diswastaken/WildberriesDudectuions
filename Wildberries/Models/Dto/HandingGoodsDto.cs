@@ -20,6 +20,9 @@ namespace WildberriesDeductions.Wildberries.Models.Dto
         public long Shk { get; set; }
         [JsonPropertyName("on_hold_date")]
         public DateTimeOffset? OnHoldDate { get;  set; }
+        
+        [JsonPropertyName("hold_date")]
+        public DateTimeOffset? HoldDate { get;  set; }
 
         [JsonPropertyName("ticket_id")]
         public long TicketId { get; set; }

@@ -59,7 +59,7 @@ namespace WildberriesDeductions.Wildberries
             if (rawData.data.Goods == null) return result;
             foreach (var item in rawData.data.Goods)
             {
-                if (item.Type == "expired" && item.TicketId == 0)
+                if (item.HoldDate == null && item.Type != "add" && item.TicketId == 0)
                     result.Add(item.ToDomain(pickpoint.Name));
             }
 

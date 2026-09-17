@@ -153,7 +153,19 @@ namespace WildberriesDeductions
 
                     if (selectedItem is DeductionGood deduction)
                     {
-                        if (deduction.Details == null) // если детали уже были загружены, то не грузим их снова
+                        if (deduction.Details != null) // если детали уже были загружены, то не грузим их снова
+                        {
+                            try
+                            {
+                                SpectreConsole.ShowDeductionScreen(deduction);
+                            }
+                            catch (Exception ex)
+                            {
+                                AnsiConsole.MarkupLine($"[red]Ошибка при загрузке деталей удержания! Описание ошибки: {ex.Message}[/]");
+                                Console.ReadKey();
+                            }
+                        }
+                        else 
                         {
                             try
                             {
@@ -176,7 +188,6 @@ namespace WildberriesDeductions
                                 Console.ReadKey();
                             }
                         }
-                        
                     }
                     if (selectedItem is Ticket ticket)
                     {

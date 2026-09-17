@@ -126,11 +126,11 @@ namespace WildberriesDeductions
             table.AddColumns("ПВЗ", "Дата удержания", "Вид удержания", "Стоимость товара", "ШК", "Ячейка");
             table.Width = AnsiConsole.Console.Profile.Width;
 
-            string price = deduction.DeductionPrice.ToString() + " руб.";
+            string price = deduction.DeductionPrice + " руб.";
             string shk = deduction.Shk.ToString();
-            string date = deduction.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss");
+            string date = deduction.OnHoldDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss") ?? "Нет данных";
             string pickpoint = deduction.PickpointName;
-            string cell = deduction.Details.Cell.ToString();
+            string cell = deduction.Details?.Cell.ToString() ?? "Нет данных";
 
 
             table.AddRow(
