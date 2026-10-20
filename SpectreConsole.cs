@@ -27,7 +27,7 @@ namespace WildberriesDeductions
             return long.Parse(phoneNumberInput);
         }
 
-        public static int AskForCode()
+        public static string AskForCode()
         {
             string codeInput = AnsiConsole.Prompt
                     (
@@ -44,7 +44,7 @@ namespace WildberriesDeductions
                         })
                     );
             AnsiConsole.Clear();
-            return int.Parse(codeInput);
+            return codeInput;
         }
 
         public static List<Pickpoint> SelectPickpoints(List<Pickpoint> allPickpoints)

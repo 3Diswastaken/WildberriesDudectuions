@@ -47,7 +47,7 @@ namespace WildberriesDeductions.Wildberries
             return tokenForValidate;
         }
 
-        public async Task<bool> ValidateCodeAndSaveTokenAsync(int code, string tokenForValidate)
+        public async Task<bool> ValidateCodeAndSaveTokenAsync(string code, string tokenForValidate)
         {
             string tokenForSwitch = string.Empty;
 

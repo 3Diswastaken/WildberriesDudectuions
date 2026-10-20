@@ -130,12 +130,12 @@ namespace WildberriesDeductions.Wildberries
         }
 
         // валидация 2fa кода
-        public async Task<ValidateRoot> Validate(RequestConfig requestConfig, string token, int code)
+        public async Task<ValidateRoot> Validate(RequestConfig requestConfig, string token, string code)
         {
             var payload = new Dictionary<string, object>(requestConfig.Payload)
             {
                 ["token"] = token,
-                ["code"] = code.ToString(),
+                ["code"] = code,
                 ["app_version"] = requestConfig.Headers["X-App-Version"]
             };
 

@@ -51,7 +51,7 @@ namespace WildberriesDeductions
                                 break;
 
                             case "code":
-                                int code = SpectreConsole.AskForCode();
+                                string code = SpectreConsole.AskForCode();
                                 await authService.ValidateCodeAndSaveTokenAsync(code, tokenForValidate);
                                 isAuthorized = true;
                                 break;
